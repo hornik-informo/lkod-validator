@@ -1,0 +1,16 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text eol=lf
+
+# Set on checkout.
+*.csv text eol=crlf
+*.bat text eol=crlf
+*.properties text eol=crlf
+
+# Binary files.
+*.jpg binary
+*.png binary
+*.jar binary
+
+*.eot binary
+*.ttf binary
+*.woff2 binary
