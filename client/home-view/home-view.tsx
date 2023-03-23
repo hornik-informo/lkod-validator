@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
@@ -17,10 +16,7 @@ export function HomeView() {
   return (
     <div>
       <h1>{t("title")}</h1>
-      <Link to="about">About Us</Link>
-      <br />
       <hr />
-      <br />
       <LoaderIndicator show={state.working} />
       <br />
       <div>
