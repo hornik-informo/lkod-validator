@@ -17,6 +17,10 @@ i18n
     interpolation: {
       escapeValue: false,
     },
+    backend: {
+      // for all available options read the backend's repository readme file
+      loadPath: './locales/{{lng}}/{{ns}}.json'
+    }
   } as InitOptions);
 
 export function Application() {
