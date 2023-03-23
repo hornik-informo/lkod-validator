@@ -1,4 +1,4 @@
-import N3 from "N3";
+import N3 from "n3";
 import * as RDF from "@rdfjs/types";
 
 interface Handler {
