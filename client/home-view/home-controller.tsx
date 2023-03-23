@@ -1,10 +1,10 @@
-import {Reducer, ReducerState, useReducer, ChangeEvent} from "react";
+import { Reducer, ReducerState, useReducer, ChangeEvent } from "react";
 import {
   Message,
   ResourceInValidation,
   validateCatalogFromUrl,
   ValidationObserver,
-  ValidationReporter
+  ValidationReporter,
 } from "../../validator";
 
 const URL_CHANGE = "URL_CHANGE";
@@ -38,34 +38,36 @@ export function useHomeController() {
 
   function onChangeUrl(event: ChangeEvent<HTMLInputElement>) {
     dispatch({
-      "type": URL_CHANGE,
-      "value": event.target.value,
+      type: URL_CHANGE,
+      value: event.target.value,
     });
   }
 
   function onSubmit() {
     const observer: ValidationObserver = {
       onMessage(message: Message) {
-        dispatch({"type": MESSAGE, "value": message});
+        dispatch({ type: MESSAGE, value: message });
       },
       onResourceWillStart(resource: ResourceInValidation) {
         dispatch({
-          "type": MESSAGE, "value": {
-            "create": new Date(),
-            "level": "INFO",
-            "validator": "",
-            "message": `Processing ${resource.url}`
-          }
+          type: MESSAGE,
+          value: {
+            create: new Date(),
+            level: "INFO",
+            validator: "",
+            message: `Processing ${resource.url}`,
+          },
         });
       },
       onResourceDidEnd(resource: ResourceInValidation) {
         // No action here
-      }
+      },
     };
 
-    dispatch({type: VALIDATION_START});
-    validateCatalogFromUrl(new ValidationReporter(observer), state.url)
-      .then(() => dispatch({"type": VALIDATION_END}));
+    dispatch({ type: VALIDATION_START });
+    validateCatalogFromUrl(new ValidationReporter(observer), state.url).then(
+      () => dispatch({ type: VALIDATION_END })
+    );
   }
 
   return {
@@ -96,10 +98,7 @@ const homeReducer: Reducer<HomeState, any> = (state, action): HomeState => {
     case MESSAGE:
       return {
         ...state,
-        messages: [
-          ...state.messages,
-          action.value,
-        ],
+        messages: [...state.messages, action.value],
       };
     default:
       throw new Error();

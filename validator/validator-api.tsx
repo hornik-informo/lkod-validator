@@ -28,14 +28,13 @@ export enum ResourceType {
   /**
    * Dataset to validate.
    */
-  DATASET = "DATASET"
+  DATASET = "DATASET",
 }
 
 /**
  * Represent a resource for validation.
  */
 export class ResourceInValidation {
-
   url: string;
 
   type: ResourceType;
@@ -44,14 +43,12 @@ export class ResourceInValidation {
     this.url = url;
     this.type = type;
   }
-
 }
 
 /**
  * Represent a basic validation unit a message.
  */
 export interface Message {
-
   readonly created: Date;
 
   readonly level: Level;
@@ -59,36 +56,31 @@ export interface Message {
   readonly validator: String;
 
   readonly message: String;
-
 }
 
 /**
  * Listener to the process of validation.
  */
 export interface ValidationObserver {
-
   onMessage(message: Message): void;
 
   onResourceWillStart(resource: ResourceInValidation): void;
 
   onResourceDidEnd(resource: ResourceInValidation): void;
-
 }
 
 class ConsoleLogObserver implements ValidationObserver {
-
   onMessage(message: Message) {
-    console.log("onMessage", message)
+    console.log("onMessage", message);
   }
 
-  onResourceWillStart(resource: ResourceInValidation): void{
-    console.log("onResourceWillStart", resource)
+  onResourceWillStart(resource: ResourceInValidation): void {
+    console.log("onResourceWillStart", resource);
   }
 
   onResourceDidEnd(resource: ResourceInValidation): void {
-    console.log("onResourceDidEnd", resource)
+    console.log("onResourceDidEnd", resource);
   }
-
 }
 
 /**
@@ -97,7 +89,6 @@ class ConsoleLogObserver implements ValidationObserver {
  * to using {@link ValidationObserver}.
  */
 export class ValidationReporter {
-
   private readonly observer: ValidationObserver;
 
   private resources: ResourceInValidation[] = [];
@@ -108,10 +99,10 @@ export class ValidationReporter {
 
   private emitMessage(level: Level, validator: String, message: String): void {
     this.observer.onMessage({
-      "created": new Date(),
-      "level": level,
-      "validator": validator,
-      "message": message
+      created: new Date(),
+      level: level,
+      validator: validator,
+      message: message,
     });
   }
 
@@ -140,7 +131,6 @@ export class ValidationReporter {
 
   beginUrlValidation(url: string) {
     this.openResource(new ResourceInValidation(url, ResourceType.URL));
-
   }
 
   private openResource(resource: ResourceInValidation): void {
@@ -156,6 +146,4 @@ export class ValidationReporter {
     const resource = this.resources.pop();
     this.observer.onResourceDidEnd(resource);
   }
-
 }
-

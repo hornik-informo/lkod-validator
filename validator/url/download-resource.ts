@@ -1,8 +1,8 @@
-import {ValidationReporter} from "../validator-api";
+import { ValidationReporter } from "../validator-api";
 
 export type ContentTypeHeader = {
-  type: string,
-  parameters: Record<string, string>
+  type: string;
+  parameters: Record<string, string>;
 };
 
 const GROUP = "HTTP";
@@ -18,21 +18,18 @@ export async function initiateResourceFetch(
   try {
     response = await fetch(url);
   } catch (error) {
-    report.critical(
-      GROUP,
-      error.message);
+    report.critical(GROUP, error.message);
     return;
   }
   if (!response.ok) {
     // Status is not in the range 200-299.
     report.critical(
       GROUP,
-      `Can't fetch data, status '${response.status}'`
-      + `text: '${response.statusText}'.`);
+      `Can't fetch data, status '${response.status}'` +
+        `text: '${response.statusText}'.`
+    );
   } else {
-    report.info(
-      GROUP,
-      "Fetching data from URL.");
+    report.info(GROUP, "Fetching data from URL.");
     return response;
   }
 }
@@ -45,7 +42,7 @@ export function parseContentType(contentTypeHeader: string): ContentTypeHeader {
     parameters[key.trim()] = value.trim();
   }
   return {
-    "type": tokens[0],
-    "parameters": parameters,
-  }
+    type: tokens[0],
+    parameters: parameters,
+  };
 }

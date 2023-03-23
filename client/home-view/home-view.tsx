@@ -1,28 +1,28 @@
-import {Link} from "react-router-dom";
-import {useTranslation} from "react-i18next";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import Fade from "@mui/material/Fade";
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import ListItemText from '@mui/material/ListItemText';
-import {useHomeController} from "./home-controller";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemText from "@mui/material/ListItemText";
+import { useHomeController } from "./home-controller";
 
 export function HomeView() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
 
-  const {state, onChangeUrl, onSubmit} = useHomeController();
+  const { state, onChangeUrl, onSubmit } = useHomeController();
 
   return (
     <div>
       <h1>{t("title")}</h1>
       <Link to="about">About Us</Link>
-      <br/>
-      <hr/>
-      <br/>
-      <LoaderIndicator show={state.working}/>
-      <br/>
+      <br />
+      <hr />
+      <br />
+      <LoaderIndicator show={state.working} />
+      <br />
       <div>
         <TextField
           id="resource-url"
@@ -32,14 +32,14 @@ export function HomeView() {
           onChange={onChangeUrl}
           fullWidth
         />
-        <br/> <br/>
+        <br /> <br />
         <Button variant="outlined" onClick={onSubmit} disabled={state.working}>
           {t("submit")}
         </Button>
       </div>
-      <br/>
-      <hr/>
-      <br/>
+      <br />
+      <hr />
+      <br />
       <List>
         {state.messages.map((message, index) => (
           <ListItem key={index}>
@@ -54,10 +54,10 @@ export function HomeView() {
   );
 }
 
-function LoaderIndicator({show}: { show: boolean }) {
+function LoaderIndicator({ show }: { show: boolean }) {
   return (
-    <Fade in={show} style={{"transitionDelay": show ? '800ms' : '0ms'}}>
-      <LinearProgress/>
+    <Fade in={show} style={{ transitionDelay: show ? "800ms" : "0ms" }}>
+      <LinearProgress />
     </Fade>
-  )
+  );
 }

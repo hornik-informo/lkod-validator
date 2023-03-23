@@ -1,1 +1,1 @@
-export {validateCatalogWithShacl} from "./shacl-validator";
+export { validateCatalogWithShacl } from "./shacl-validator";

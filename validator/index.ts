@@ -1,2 +1,2 @@
 export * from "./validator-api";
-export {validateCatalogFromUrl} from "./catalog-validator";
+export { validateCatalogFromUrl } from "./catalog-validator";

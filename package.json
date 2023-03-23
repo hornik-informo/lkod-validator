@@ -15,7 +15,6 @@
     "@hyperjump/json-schema": "^1.4.1",
     "@mui/material": "^5.11.14",
     "@rdfjs/data-model": "^2.0.1",
-    "@rdfjs/types": "^1.1.0",
     "fetch-sparql-endpoint": "^3.2.1",
     "i18next-browser-languagedetector": "^7.0.1",
     "i18next-http-backend": "^2.2.0",

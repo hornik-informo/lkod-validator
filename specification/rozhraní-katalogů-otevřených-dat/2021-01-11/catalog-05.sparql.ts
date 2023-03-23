@@ -1,4 +1,4 @@
-import {ValidationReporter} from "../../../validator";
+import { ValidationReporter } from "../../../validator";
 
 const create = () => `
 PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -20,5 +20,5 @@ const failed = (reporter: ValidationReporter) => {
 export default {
   create,
   pass,
-  failed
+  failed,
 };

@@ -6,9 +6,7 @@
   "description": "Více vícejazyčných textů",
   "anyOf": [
     {
-      "required": [
-        "cs"
-      ],
+      "required": ["cs"],
       "properties": {
         "cs": {
           "anyOf": [
@@ -16,9 +14,7 @@
               "type": "string",
               "title": "Text česky",
               "description": "Text česky",
-              "examples": [
-                "Text česky"
-              ]
+              "examples": ["Text česky"]
             },
             {
               "type": "array",
@@ -26,9 +22,7 @@
                 "type": "string",
                 "title": "Text česky",
                 "description": "Text česky",
-                "examples": [
-                  "Text česky"
-                ]
+                "examples": ["Text česky"]
               }
             }
           ]
@@ -36,9 +30,7 @@
       }
     },
     {
-      "required": [
-        "en"
-      ],
+      "required": ["en"],
       "properties": {
         "en": {
           "anyOf": [
@@ -46,9 +38,7 @@
               "type": "string",
               "title": "Text anglicky",
               "description": "Text anglicky",
-              "examples": [
-                "Text in English"
-              ]
+              "examples": ["Text in English"]
             },
             {
               "type": "array",
@@ -56,9 +46,7 @@
                 "type": "string",
                 "title": "Text anglicky",
                 "description": "Text anglicky",
-                "examples": [
-                  "Text in English"
-                ]
+                "examples": ["Text in English"]
               }
             }
           ]

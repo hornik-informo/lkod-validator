@@ -1,6 +1,6 @@
 import react from "@vitejs/plugin-react";
-import {defineConfig} from "vite";
-import {nodePolyfills} from "vite-plugin-node-polyfills";
+import { defineConfig } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,4 +17,25 @@ export default defineConfig({
     // process: {},
   },
   base: "./",
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom", "react-i18next", "react-router-dom"],
+          rdf: [
+            "@rdfjs/data-model",
+            "fetch-sparql-endpoint",
+            "jsonld",
+            "memory-level",
+            "n3",
+            "quadstore",
+            "quadstore-comunica",
+            "rdf-data-factory",
+            "rdf-ext",
+            "rdf-validate-shacl",
+          ],
+        },
+      },
+    },
+  },
 });

@@ -58,15 +58,11 @@
     },
     "kontaktní_bod": {
       "type": "object",
-      "required": [
-        "typ"
-      ],
+      "required": ["typ"],
       "properties": {
         "typ": {
           "type": "string",
-          "examples": [
-            "Organizace"
-          ]
+          "examples": ["Organizace"]
         },
         "jméno": {
           "$ref": "https://ofn.gov.cz/základní-datové-typy/2020-07-01/schémata/text.json"
@@ -75,9 +71,7 @@
           "type": "string",
           "format": "iri",
           "pattern": "^mailto\\:",
-          "examples": [
-            "mailto:sekretariat.190@mdcr.cz"
-          ]
+          "examples": ["mailto:sekretariat.190@mdcr.cz"]
         }
       }
     },
@@ -87,9 +81,7 @@
       "title": "Domovská stránka",
       "minLength": 8,
       "pattern": "^https://",
-      "examples": [
-        "https://data.gov.cz/"
-      ]
+      "examples": ["https://data.gov.cz/"]
     },
     "datová_sada": {
       "type": "array",

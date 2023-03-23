@@ -2,20 +2,17 @@ import N3 from "N3";
 import * as RDF from "@rdfjs/types";
 
 interface Handler {
-
   onQuad(quad: N3.Quad): void;
 
   onError(error: Error): void;
-
 }
 
 class N3StreamReader {
-
   protected readonly parser: N3.Parser;
 
   protected readonly handler: Handler;
 
-  protected readonly decoder = new TextDecoder('utf-8');
+  protected readonly decoder = new TextDecoder("utf-8");
 
   /**
    * Parser callback for when data ara available.
@@ -50,7 +47,8 @@ class N3StreamReader {
       },
       (prefix: string, uri: N3.NamedNode) => {
         // No action here.
-      });
+      }
+    );
   }
 
   /**
@@ -60,17 +58,17 @@ class N3StreamReader {
     return {
       on: (event, callback) => {
         switch (event) {
-          case 'data':
+          case "data":
             this.onData = callback;
             break;
-          case 'end':
+          case "end":
             this.onEnd = callback;
             break;
-          case 'error':
+          case "error":
             // We do not need to capture error callback.
             break;
         }
-      }
+      },
     };
   }
 
@@ -83,14 +81,14 @@ class N3StreamReader {
     }
     this.onEnd();
   }
-
 }
 
 export function stringN3ToRdf(
-  document: string, format: N3.BaseFormat
+  document: string,
+  format: N3.BaseFormat
 ): Promise<RDF.Quad[]> {
   return new Promise((accept, reject) => {
-    const parser = new N3.Parser({format});
+    const parser = new N3.Parser({ format });
     const collector = [];
     parser.parse(document, (error, quad, prefixes) => {
       if (quad === null) {
@@ -105,16 +103,21 @@ export function stringN3ToRdf(
 }
 
 export function streamN3ToRdf(
-  document: ReadableStreamDefaultReader, format: N3.BaseFormat
+  document: ReadableStreamDefaultReader,
+  format: N3.BaseFormat
 ): Promise<RDF.Quad[]> {
   const collector = [];
   return new Promise((accept, reject) => {
-    const parser = new N3StreamReader({format}, {
-      "onQuad": (quad) => collector.push(quad),
-      "onError": (error) => reject(error)
-    });
-    parser.parse(document)
+    const parser = new N3StreamReader(
+      { format },
+      {
+        onQuad: quad => collector.push(quad),
+        onError: error => reject(error),
+      }
+    );
+    parser
+      .parse(document)
       .then(() => accept(collector))
-      .catch((error) => reject(error));
+      .catch(error => reject(error));
   });
 }

@@ -1,4 +1,4 @@
 export {
   validateCatalogWithSparql,
-  validateDatasetWithSparql
+  validateDatasetWithSparql,
 } from "./sparql-validator";

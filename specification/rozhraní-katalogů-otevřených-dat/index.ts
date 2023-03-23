@@ -11,32 +11,26 @@ import Dataset01Sparql from "./2021-01-11/dataset-01.sparql";
 import Dataset02Sparql from "./2021-01-11/dataset-02.sparql";
 
 export const v20210111 = {
-  "Catalog": {
-    "SPARQL": {
-      "ASK": [
+  Catalog: {
+    SPARQL: {
+      ASK: [
         Catalog01Sparql,
         Catalog02Sparql,
         Catalog03Sparql,
         Catalog04Sparql,
         Catalog05Sparql,
         Catalog06Sparql,
-      ]
-    },
-    "SHACL": [
-      CatalogShacl,
-    ],
-    "JSON_SCHEMA": CatalogJsonSchema
-  },
-  "Dataset": {
-    "SPARQL": {
-      "ASK": [
-        Dataset01Sparql,
       ],
-      "SELECT": [
-        Dataset02Sparql
-      ]
     },
-    "SHACL": [],
-    "JSON_SCHEMA": DatasetJsonSchema
-  }
+    SHACL: [CatalogShacl],
+    JSON_SCHEMA: CatalogJsonSchema,
+  },
+  Dataset: {
+    SPARQL: {
+      ASK: [Dataset01Sparql],
+      SELECT: [Dataset02Sparql],
+    },
+    SHACL: [],
+    JSON_SCHEMA: DatasetJsonSchema,
+  },
 };

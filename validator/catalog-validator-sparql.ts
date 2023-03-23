@@ -1,7 +1,7 @@
-import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
+import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
 
-import {ValidationReporter} from "./validator-api";
-import {v20210111} from "../specification/rozhraní-katalogů-otevřených-dat";
+import { ValidationReporter } from "./validator-api";
+import { v20210111 } from "../specification/rozhraní-katalogů-otevřených-dat";
 
 const fetcher = new SparqlEndpointFetcher();
 
@@ -10,17 +10,17 @@ const fetcher = new SparqlEndpointFetcher();
  * we are not leaving it.
  */
 export async function validateCatalogFromSparql(
-  reporter: ValidationReporter, url: string
+  reporter: ValidationReporter,
+  url: string
 ): Promise<undefined> {
-
   // TODO Add SPARQL extraction query to load all relevant quads.
-
   // await validateCatalog(reporter, url);
   // await validateDatasets(reporter, url);
 }
 
 async function validateCatalog(
-  reporter: ValidationReporter, url: string
+  reporter: ValidationReporter,
+  url: string
 ): Promise<undefined> {
   for (const sparqlAsk of v20210111.Catalog.SPARQL.ASK) {
     const query = sparqlAsk.create();
@@ -38,7 +38,8 @@ export async function executeAsk(url: string, query: string): Promise<boolean> {
 }
 
 export async function validateDatasets(
-  reporter: ValidationReporter, url: string
+  reporter: ValidationReporter,
+  url: string
 ): Promise<undefined> {
   for (const sparqlAsk of v20210111.Dataset.SPARQL.ASK) {
     const query = sparqlAsk.create();
@@ -60,8 +61,8 @@ async function executeSelect(url: string, query: string): Promise<object[]> {
   const bindingsStream = await fetcher.fetchBindings(url, query);
   return new Promise((accept, reject) => {
     const collector = [];
-    bindingsStream.on("data", (binding) => collector.push(binding));
+    bindingsStream.on("data", binding => collector.push(binding));
     bindingsStream.on("end", () => accept(collector));
-    bindingsStream.on("error", (error) => reject(error));
+    bindingsStream.on("error", error => reject(error));
   });
 }

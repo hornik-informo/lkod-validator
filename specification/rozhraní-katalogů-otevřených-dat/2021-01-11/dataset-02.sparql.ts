@@ -1,4 +1,4 @@
-import {ValidationReporter} from "../../../validator";
+import { ValidationReporter } from "../../../validator";
 
 const create = (dataset: string) => `
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
@@ -131,5 +131,5 @@ const handle = (reporter: ValidationReporter, bindings: object[]) => {
 
 export default {
   create,
-  handle
+  handle,
 };
