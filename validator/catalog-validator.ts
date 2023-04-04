@@ -9,6 +9,10 @@ import { validateCatalogFromTurtle } from "./catalog-validator-turtle";
 
 const GROUP = "NONE";
 
+const JSON_EXTENSION = ["json", "jsonld"];
+
+const TURTLE_EXTENSION = ["ttl"];
+
 export async function validateCatalogFromUrl(
   reporter: ValidationReporter,
   url: string
@@ -33,6 +37,9 @@ async function validateUrlOrThrow(
     return;
   }
   const response = await initiateResourceFetch(url, reporter);
+  if (response === null) {
+    return;
+  }
   const contentTypeHeader = parseContentType(
     response.headers.get("content-type")
   );
@@ -43,10 +50,24 @@ async function validateUrlOrThrow(
     reporter.info(GROUP, "Validating as JSON-LD file.");
     await validateCatalogFromJsonLd(reporter, url, response);
   } else {
-    reporter.critical(
+    reporter.warning(
       GROUP,
-      `Invalid content type '${contentTypeHeader.type}'.`
+      `Can't determine type from content type '${contentTypeHeader.type}'.`
     );
+    const extension = getExtension(url);
+    console.log("extension", extension);
+    if (JSON_EXTENSION.includes(extension)) {
+      reporter.info(GROUP, "Validating as JSON-LD file based on file extension");
+      await validateCatalogFromJsonLd(reporter, url, response);
+    } else if (TURTLE_EXTENSION.includes(extension)) {
+      reporter.info(GROUP, "Validating as turtle file based on file extension.");
+      await validateCatalogFromTurtle(reporter, url, response);
+    } else {
+      reporter.critical(
+        GROUP,
+        `Can not determine type of data.`
+      );
+    }
   }
 }
 
@@ -61,4 +82,8 @@ async function isSparqlEndpoint(url: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+function getExtension(url:string): string {
+  return url.substr(url.lastIndexOf(".") + 1).toLowerCase();
 }

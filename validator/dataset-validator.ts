@@ -24,6 +24,9 @@ async function validateUrlOrThrow(
   url: string
 ): Promise<undefined> {
   const response = await initiateResourceFetch(url, reporter);
+  if (response === null) {
+    return;
+  }
   const contentTypeHeader = parseContentType(
     response.headers.get("content-type")
   );

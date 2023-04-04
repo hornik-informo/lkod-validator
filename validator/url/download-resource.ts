@@ -13,13 +13,13 @@ const GROUP = "HTTP";
 export async function initiateResourceFetch(
   url: string,
   report: ValidationReporter
-): Promise<Response> {
+): Promise<Response | null> {
   let response: Response;
   try {
     response = await fetch(url);
   } catch (error) {
-    report.critical(GROUP, error.message);
-    return;
+    report.critical(GROUP, `Fetch of '${url}' failed, with error message '${error.message}'.`);
+    return null;
   }
   if (!response.ok) {
     // Status is not in the range 200-299.
