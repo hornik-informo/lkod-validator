@@ -18,7 +18,10 @@ export async function initiateResourceFetch(
   try {
     response = await fetch(url);
   } catch (error) {
-    report.critical(GROUP, `Fetch of '${url}' failed, with error message '${error.message}'.`);
+    report.critical(
+      GROUP,
+      `Fetch of '${url}' failed, with error message '${error.message}'.`
+    );
     return null;
   }
   if (!response.ok) {

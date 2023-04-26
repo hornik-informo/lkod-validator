@@ -28,7 +28,10 @@ export const v20210111 = {
   Dataset: {
     SPARQL: {
       ASK: [Dataset01Sparql],
-      SELECT: [Dataset02Sparql],
+      // TODO
+      SELECT: [
+        /*Dataset02Sparql - sub-select is not working */
+      ],
     },
     SHACL: [],
     JSON_SCHEMA: DatasetJsonSchema,

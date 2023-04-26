@@ -1,10 +1,9 @@
+import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
+
 import { ValidationReporter } from "./validator-api";
 import { initiateResourceFetch, parseContentType } from "./url";
 import { validateCatalogFromJsonLd } from "./catalog-validator-jsonld";
-import {
-  validateCatalogFromSparql,
-  executeAsk,
-} from "./catalog-validator-sparql";
+import { validateCatalogFromSparql } from "./catalog-validator-sparql";
 import { validateCatalogFromTurtle } from "./catalog-validator-turtle";
 
 const GROUP = "NONE";
@@ -12,6 +11,8 @@ const GROUP = "NONE";
 const JSON_EXTENSION = ["json", "jsonld"];
 
 const TURTLE_EXTENSION = ["ttl"];
+
+const fetcher = new SparqlEndpointFetcher();
 
 export async function validateCatalogFromUrl(
   reporter: ValidationReporter,
@@ -21,7 +22,8 @@ export async function validateCatalogFromUrl(
   try {
     await validateUrlOrThrow(reporter, url);
   } catch (error) {
-    console.log("Validation failed with exception.", error);
+    console.error("Validation failed with exception.", error);
+    reporter.critical(GROUP, "There might be a bug in this application.");
   } finally {
     reporter.endResourceValidation();
   }
@@ -55,18 +57,20 @@ async function validateUrlOrThrow(
       `Can't determine type from content type '${contentTypeHeader.type}'.`
     );
     const extension = getExtension(url);
-    console.log("extension", extension);
     if (JSON_EXTENSION.includes(extension)) {
-      reporter.info(GROUP, "Validating as JSON-LD file based on file extension");
+      reporter.info(
+        GROUP,
+        "Validating as JSON-LD file based on file extension"
+      );
       await validateCatalogFromJsonLd(reporter, url, response);
     } else if (TURTLE_EXTENSION.includes(extension)) {
-      reporter.info(GROUP, "Validating as turtle file based on file extension.");
+      reporter.info(
+        GROUP,
+        "Validating as turtle file based on file extension."
+      );
       await validateCatalogFromTurtle(reporter, url, response);
     } else {
-      reporter.critical(
-        GROUP,
-        `Can not determine type of data.`
-      );
+      reporter.critical(GROUP, `Can not determine type of data.`);
     }
   }
 }
@@ -77,13 +81,13 @@ async function validateUrlOrThrow(
  */
 async function isSparqlEndpoint(url: string): Promise<boolean> {
   try {
-    await executeAsk(url, "ASK {?s ?p ?o}");
+    await fetcher.fetchAsk(url, "ASK {?s ?p ?o}");
     return true;
   } catch {
     return false;
   }
 }
 
-function getExtension(url:string): string {
+function getExtension(url: string): string {
   return url.substr(url.lastIndexOf(".") + 1).toLowerCase();
 }

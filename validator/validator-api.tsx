@@ -5,19 +5,19 @@ export enum Level {
   /**
    * Information or positive validation outcome.
    */
-  INFO = "INFO",
+  INFO = 0,
   /**
    * Something that may or may not be a problem.
    */
-  WARNING = "WARNING",
+  WARNING = 1,
   /**
    * A problem.
    */
-  ERROR = "ERROR",
+  ERROR = 2,
   /**
    * A problem that force us to stop validation of curren resource.
    */
-  CRITICAL = "CRITICAL",
+  CRITICAL = 3,
 }
 
 export enum ResourceType {
@@ -25,6 +25,10 @@ export enum ResourceType {
    * URL to validate as provided by the user.
    */
   URL = "URL",
+  /**
+   * Represent a catalog.
+   */
+  CATALOG = "CATALOG",
   /**
    * Dataset to validate.
    */
@@ -125,10 +129,6 @@ export class ValidationReporter {
     this.emitMessage(Level.CRITICAL, validator, message);
   }
 
-  private lastResource(): ResourceInValidation | undefined {
-    return this.resources[this.resources.length - 1];
-  }
-
   beginUrlValidation(url: string) {
     this.openResource(new ResourceInValidation(url, ResourceType.URL));
   }
@@ -136,6 +136,10 @@ export class ValidationReporter {
   private openResource(resource: ResourceInValidation): void {
     this.observer.onResourceWillStart(resource);
     this.resources.push(resource);
+  }
+
+  beginCatalogValidation(url: string) {
+    this.openResource(new ResourceInValidation(url, ResourceType.CATALOG));
   }
 
   beginDatasetValidation(url: string) {

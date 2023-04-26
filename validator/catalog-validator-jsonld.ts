@@ -2,6 +2,7 @@ import { ValidationReporter } from "./validator-api";
 import { validateCatalogWithJsonSchema } from "./json-schema";
 import { jsonLdToRdf } from "./rdf-reader";
 import { validateCatalogFromQuads } from "./catalog-validator-quads";
+import { validateDatasetFromUrl } from "./dataset-validator";
 
 const GROUP = "JSON-LD";
 
@@ -30,5 +31,5 @@ export async function validateCatalogFromJsonLd(
   }
   reporter.info(GROUP, `Loaded ${quads.length} statements.`);
   // Validate as RDF.
-  await validateCatalogFromQuads(reporter, quads, url);
+  await validateCatalogFromQuads(reporter, validateDatasetFromUrl, quads, url);
 }

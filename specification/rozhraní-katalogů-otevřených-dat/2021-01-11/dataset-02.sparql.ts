@@ -11,108 +11,88 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 PREFIX pu: <https://data.gov.cz/slovník/podmínky-užití/>
 
-SELECT ?datová_sada ?výsledek
-WHERE {
-  {
-    SELECT ?datová_sada (MAX(?splňuje) AS ?výsledek)
-    WHERE {
-      {
-        SELECT DISTINCT ?datová_sada ?splňuje
-        WHERE {
-          ?datová_sada a dcat:Dataset .
-          BIND(false AS ?splňuje)
-        }
-      }
-      UNION
-      {
-        SELECT DISTINCT ?datová_sada ?splňuje
-        WHERE {
-          ?datová_sada a dcat:Dataset ; 
-             dcterms:title ?název ;
-             dcterms:description ?popis ;
-             dcat:keyword ?klíčové_slvo ;
-             dcterms:publisher ?poskytovatel .
+// Mandatory/Optional fields.
+?datová_sada a dcat:Dataset ; 
+   dcterms:title ?název ;
+   dcterms:description ?popis ;
+   dcat:keyword ?klíčové_slvo ;
+   dcterms:publisher ?poskytovatel .
 
-          FILTER (EXISTS {
-              ?datová_sada dcat:theme ?téma .
-              FILTER(STRSTARTS(STR(?téma), "http://publications.europa.eu/resource/authority/data-theme/"))
-            })
+FILTER (EXISTS {
+    ?datová_sada dcat:theme ?téma .
+    FILTER(STRSTARTS(STR(?téma), "http://publications.europa.eu/resource/authority/data-theme/"))
+  })
 
-          FILTER (EXISTS {
-              ?datová_sada dcterms:accrualPeriodicity ?periodicita .
-              FILTER(STRSTARTS(STR(?periodicita), "http://publications.europa.eu/resource/authority/frequency/"))
-            })
+FILTER (EXISTS {
+    ?datová_sada dcterms:accrualPeriodicity ?periodicita .
+    FILTER(STRSTARTS(STR(?periodicita), "http://publications.europa.eu/resource/authority/frequency/"))
+  })
 
-          FILTER (EXISTS {
-              #https://github.com/openlink/virtuoso-opensource/issues/942
-              ?datová_sada dcterms:spatial ?uzemní_pokrytí .
-              FILTER(STRSTARTS(STR(?uzemní_pokrytí), "https://linked.cuzk.cz/resource/ruian/"))
-            })
+FILTER (EXISTS {
+    ?datová_sada dcterms:spatial ?uzemní_pokrytí .
+    FILTER(STRSTARTS(STR(?uzemní_pokrytí), "https://linked.cuzk.cz/resource/ruian/"))
+  })
 
-          FILTER(
-            # je to zastřešující datová sada - nemá distribuce, ale má části
-            (
-              EXISTS {
-                [] dcterms:isPartOf ?datová_sada .
-              }
-              &&
-              NOT EXISTS {
-                ?datová_sada dcat:distribution [] .
-              }
-            )
-            ||
-            # je to soubor ke stažení
-            EXISTS {
-              ?datová_sada dcat:distribution ?distribuce .
-
-              ?distribuce a dcat:Distribution ;
-                           dcat:accessURL ?přístupovéURL ;
-                           dcat:downloadURL ?URLkeStažení ;
-                           pu:specifikace ?podmínky .
-
-              ?podmínky a pu:Specifikace ;
-                           pu:autorské-dílo [] ;
-                           pu:databáze-jako-autorské-dílo [] ;
-                           pu:databáze-chráněná-zvláštními-právy [] ;
-                           pu:osobní-údaje [] .
-
-              FILTER (EXISTS {
-                  ?distribuce dcat:mediaType ?mediaType .
-                  FILTER(STRSTARTS(STR(?mediaType), "http://www.iana.org/assignments/media-types/"))
-                })
-
-              FILTER (EXISTS {
-                  ?distribuce dcterms:format ?format .
-                  FILTER(STRSTARTS(STR(?format), "http://publications.europa.eu/resource/authority/file-type/"))
-                })
-            }
-            ||
-            # je to datová služba
-            EXISTS {
-              ?datová_sada dcat:distribution ?distribuce .
-
-              ?distribuce a dcat:Distribution ;
-                           dcat:accessURL ?přístupovéURL ;
-                           dcat:accessService ?datová_služba ;
-                           pu:specifikace ?podmínky .
-
-              ?podmínky a pu:Specifikace ;
-                           pu:autorské-dílo [] ;
-                           pu:databáze-jako-autorské-dílo [] ;
-                           pu:databáze-chráněná-zvláštními-právy [] ;
-                           pu:osobní-údaje [] .
-
-              ?datová_služba a dcat:DataService ;
-                           dcterms:title ?název_služby ;
-                           dcat:endpointURL ?urlEndpointu .
-            }
-          )
-          BIND(true AS ?splňuje)
-        }
-      }
+FILTER(
+  # je to zastřešující datová sada - nemá distribuce, ale má části
+  (
+    EXISTS {
+      [] dcterms:isPartOf ?datová_sada .
     }
-    GROUP BY ?datová_sada
+    &&
+    NOT EXISTS {
+      ?datová_sada dcat:distribution [] .
+    }
+  )
+  ||
+  # je to soubor ke stažení
+  EXISTS {
+    ?datová_sada dcat:distribution ?distribuce .
+
+    ?distribuce a dcat:Distribution ;
+                 dcat:accessURL ?přístupovéURL ;
+                 dcat:downloadURL ?URLkeStažení ;
+                 pu:specifikace ?podmínky .
+
+    ?podmínky a pu:Specifikace ;
+                 pu:autorské-dílo [] ;
+                 pu:databáze-jako-autorské-dílo [] ;
+                 pu:databáze-chráněná-zvláštními-právy [] ;
+                 pu:osobní-údaje [] .
+
+    FILTER (EXISTS {
+        ?distribuce dcat:mediaType ?mediaType .
+        FILTER(STRSTARTS(STR(?mediaType), "http://www.iana.org/assignments/media-types/"))
+      })
+
+    FILTER (EXISTS {
+        ?distribuce dcterms:format ?format .
+        FILTER(STRSTARTS(STR(?format), "http://publications.europa.eu/resource/authority/file-type/"))
+      })
   }
+  ||
+  # je to datová služba
+  EXISTS {
+    ?datová_sada dcat:distribution ?distribuce .
+
+    ?distribuce a dcat:Distribution ;
+                 dcat:accessURL ?přístupovéURL ;
+                 dcat:accessService ?datová_služba ;
+                 pu:specifikace ?podmínky .
+
+    ?podmínky a pu:Specifikace ;
+                 pu:autorské-dílo [] ;
+                 pu:databáze-jako-autorské-dílo [] ;
+                 pu:databáze-chráněná-zvláštními-právy [] ;
+                 pu:osobní-údaje [] .
+
+    ?datová_služba a dcat:DataService ;
+                 dcterms:title ?název_služby ;
+                 dcat:endpointURL ?urlEndpointu .
+  }
+  )
+}
+
 }`;
 
 const handle = (reporter: ValidationReporter, bindings: object[]) => {
