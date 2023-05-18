@@ -23,9 +23,9 @@ import { useHomeController, MessageGroup } from "./home-controller";
 import {ResourceType, Level} from "../../validator";
 
 const GROUP_TO_LABEL = {
-  [ResourceType.URL]: "Entry point",
-  [ResourceType.CATALOG]: "Catalog",
-  [ResourceType.DATASET]: "Dataset",
+  [ResourceType.URL]: "home-view.entry-point",
+  [ResourceType.CATALOG]: "home-view.catalog",
+  [ResourceType.DATASET]: "home-view.dataset",
 }
 
 const GROUP_TO_ICON = {
@@ -42,10 +42,10 @@ const LEVEL_TO_COLOR = {
 }
 
 const LEVEL_TO_LABEL = {
-  [Level.INFO]: "Info",
-  [Level.WARNING]: "Warning",
-  [Level.ERROR]: "Error",
-  [Level.CRITICAL]: "Critical",
+  [Level.INFO]: "home-view.info",
+  [Level.WARNING]: "home-view.warning",
+  [Level.ERROR]: "home-view.error",
+  [Level.CRITICAL]: "home-view.critical",
 }
 
 const MESSAGE_LEVEL_TO_ICON = {
@@ -57,18 +57,15 @@ const MESSAGE_LEVEL_TO_ICON = {
 
 export function HomeView() {
   const { t } = useTranslation();
-
   const { state, onChangeUrl, onSubmit, onToggle } = useHomeController();
 
   return (
-    <div>
-      <h1>{t("title")}</h1>
-      <LoaderIndicator show={state.working} />
-      <br />
+    <>
+      <h1>{t("home-view.title")}</h1>
       <div>
         <TextField
           id="resource-url"
-          label={t("resource-url")}
+          label={t("home-view.resource-url")}
           variant="standard"
           value={state.url}
           onChange={onChangeUrl}
@@ -76,13 +73,14 @@ export function HomeView() {
         />
         <br /> <br />
         <Button variant="outlined" onClick={onSubmit} disabled={state.working}>
-          {t("submit")}
+          {t("home-view.submit")}
         </Button>
       </div>
       <br />
       <hr />
+      <LoaderIndicator show={state.working} />
       <br />
-      {state.statusMessage}
+      {t(state.statusMessage, state.statusArgs)}
       <br />
       <List>
         {state.groups.map(
@@ -91,7 +89,7 @@ export function HomeView() {
               <ListItem>
                 <GroupIcon type={resource.type} level={level}/>
                 <ListItemText
-                  primary={GROUP_TO_LABEL[resource.type]}
+                  primary={t(GROUP_TO_LABEL[resource.type])}
                   secondary={resource.url}
                 />
                 <div onClick={() => onToggle(index)}>
@@ -102,10 +100,10 @@ export function HomeView() {
                 <List component="div" disablePadding>
                   {messages.map((message, index) => (
                     <ListItem key={index} sx={{ pl: 4 }}>
-                      <MessageIcon level={message.level}/>
+                      <MessageIcon level={t(message.level)}/>
                       <ListItemText
-                        primary={message.message}
-                        secondary={`Validator : ${message.validator}`}
+                        primary={t(message.message, message.args)}
+                        secondary={t(message.validator)}
                       />
                     </ListItem>
                   ))}
@@ -115,7 +113,7 @@ export function HomeView() {
           )
         )}
       </List>
-    </div>
+    </>
   );
 }
 

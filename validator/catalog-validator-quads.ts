@@ -1,10 +1,10 @@
 import * as RDF from "@rdfjs/types";
 
-import { ValidationReporter } from "./validator-api";
-import { validateCatalogWithShacl } from "./shacl";
-import { validateCatalogWithSparql } from "./sparql";
+import {ValidationReporter} from "./validator-api";
+import {validateCatalogWithShacl} from "./shacl";
+import {validateCatalogWithSparql} from "./sparql";
 
-const GROUP = "RDF";
+const GROUP = "quads.group";
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
@@ -41,9 +41,9 @@ export async function validateCatalogFromQuads(
 function selectCatalogs(quads: RDF.Quad[]): string[] {
   const result = [];
   for (const {
-    subject: { value: subject },
-    predicate: { value: predicate },
-    object: { value: object },
+    subject: {value: subject},
+    predicate: {value: predicate},
+    object: {value: object},
   } of quads) {
     if (predicate === RDF_TYPE && object === DCAT_CATALOG) {
       result.push(subject);
@@ -58,16 +58,16 @@ function validateCatalogUrl(
   expectedCatalogUrl: string
 ) {
   if (catalogs.length === 0) {
-    reporter.error(GROUP, "No catalog resource found.");
+    reporter.error(GROUP, "quads.missing-catalog");
   } else if (catalogs.length > 1) {
-    reporter.error(GROUP, `Expected one catalog, found ${catalogs.length}.`);
+    reporter.error(GROUP, "quads.multiple-catalogs", {count: catalogs.length});
   } else if (catalogs[0] !== expectedCatalogUrl) {
-    reporter.error(
-      GROUP,
-      `Expected catalog '${expectedCatalogUrl}', 'found ${catalogs[0]}'.`
-    );
+    reporter.error(GROUP, "quads.unexpected-catalog", {
+      expected: expectedCatalogUrl,
+      actual: catalogs[0]
+    });
   } else {
-    reporter.info(GROUP, `Found catalog '${catalogs[0]}'`);
+    reporter.info(GROUP, "quads.catalog-url", {url: catalogs});
   }
 }
 
@@ -77,20 +77,24 @@ async function validateDatasets(
   quads: RDF.Quad[]
 ): Promise<undefined> {
   const datasets = selectDatasets(quads);
-  reporter.info(GROUP, `Found ${datasets.length} datasets.`);
+  reporter.info(GROUP, "quads.catalog-count", {count: datasets.length});
   let counter = 1;
   for (const dataset of datasets) {
-    reporter.updateStatus(`Validating dataset ${counter} / ${datasets.length}`);
+    reporter.updateStatus("quads.status-validating-datasets",
+      {index: counter, total: datasets.length});
     await datasetValidatorCallback(reporter, dataset);
     ++counter;
+    if (counter > 2) {
+      break;
+    }
   }
 }
 
 function selectDatasets(quads: RDF.Quad[]): string[] {
   const result = [];
   for (const {
-    predicate: { value: predicate },
-    object: { value: object },
+    predicate: {value: predicate},
+    object: {value: object},
   } of quads) {
     if (predicate === DCAT_HAS_DATASET) {
       result.push(object);

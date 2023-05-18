@@ -1,12 +1,12 @@
-import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
+import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
 
-import { ValidationReporter } from "./validator-api";
-import { initiateResourceFetch, parseContentType } from "./url";
-import { validateCatalogFromJsonLd } from "./catalog-validator-jsonld";
-import { validateCatalogFromSparql } from "./catalog-validator-sparql";
-import { validateCatalogFromTurtle } from "./catalog-validator-turtle";
+import {ValidationReporter} from "./validator-api";
+import {initiateResourceFetch, parseContentType} from "./url";
+import {validateCatalogFromJsonLd} from "./catalog-validator-jsonld";
+import {validateCatalogFromSparql} from "./catalog-validator-sparql";
+import {validateCatalogFromTurtle} from "./catalog-validator-turtle";
 
-const GROUP = "NONE";
+const GROUP = "catalog.group";
 
 const JSON_EXTENSION = ["json", "jsonld"];
 
@@ -19,16 +19,15 @@ export async function validateCatalogFromUrl(
   url: string
 ): Promise<undefined> {
   reporter.beginUrlValidation(url);
-  reporter.updateStatus("Validating catalog ...");
+  reporter.updateStatus("catalog.validating-catalog");
   try {
     await validateUrlOrThrow(reporter, url);
   } catch (error) {
-    console.error("Validation failed with exception.", error);
-    reporter.critical(GROUP, "There might be a bug in this application.");
+    reporter.critical(GROUP, "catalog.unexpected-error", {error});
   } finally {
     reporter.endResourceValidation();
   }
-  reporter.updateStatus("Validace dokončena.");
+  reporter.updateStatus("catalog.validation-is-done");
 }
 
 async function validateUrlOrThrow(
@@ -36,7 +35,7 @@ async function validateUrlOrThrow(
   url: string
 ): Promise<undefined> {
   if (await isSparqlEndpoint(url)) {
-    reporter.info(GROUP, "Validating as SPARQL endpoint.");
+    reporter.info(GROUP, "catalog.as-sparql");
     await validateCatalogFromSparql(reporter, url);
     return;
   }
@@ -48,31 +47,23 @@ async function validateUrlOrThrow(
     response.headers.get("content-type")
   );
   if (contentTypeHeader.type === "text/turtle") {
-    reporter.info(GROUP, "Validating as turtle file.");
+    reporter.info(GROUP, "catalog.as-turtle");
     await validateCatalogFromTurtle(reporter, url, response);
   } else if (contentTypeHeader.type === "application/ld+json") {
-    reporter.info(GROUP, "Validating as JSON-LD file.");
+    reporter.info(GROUP, "catalog.as-jsonld");
     await validateCatalogFromJsonLd(reporter, url, response);
   } else {
-    reporter.warning(
-      GROUP,
-      `Can't determine type from content type '${contentTypeHeader.type}'.`
-    );
+    reporter.warning(GROUP, "catalog.unknown-content-type",
+      {type: contentTypeHeader.type});
     const extension = getExtension(url);
     if (JSON_EXTENSION.includes(extension)) {
-      reporter.info(
-        GROUP,
-        "Validating as JSON-LD file based on file extension"
-      );
+      reporter.info(GROUP, "catalog.as-jsonld-by-extension");
       await validateCatalogFromJsonLd(reporter, url, response);
     } else if (TURTLE_EXTENSION.includes(extension)) {
-      reporter.info(
-        GROUP,
-        "Validating as turtle file based on file extension."
-      );
+      reporter.info(GROUP, "catalog.as-turtle-by-extension");
       await validateCatalogFromTurtle(reporter, url, response);
     } else {
-      reporter.critical(GROUP, `Can not determine type of data.`);
+      reporter.critical(GROUP, "catalog.can-not-determine-type");
     }
   }
 }

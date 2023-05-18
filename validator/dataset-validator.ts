@@ -1,9 +1,9 @@
-import { ValidationReporter } from "./validator-api";
-import { initiateResourceFetch, parseContentType } from "./url";
-import { validateDatasetFromJsonld } from "./dataset-validator-jsonld";
-import { validateDatasetFromTurtle } from "./dataset-validator-turtle";
+import {ValidationReporter} from "./validator-api";
+import {initiateResourceFetch, parseContentType} from "./url";
+import {validateDatasetFromJsonld} from "./dataset-validator-jsonld";
+import {validateDatasetFromTurtle} from "./dataset-validator-turtle";
 
-const GROUP = "NONE";
+const GROUP = "dataset.group";
 
 export async function validateDatasetFromUrl(
   reporter: ValidationReporter,
@@ -31,15 +31,12 @@ async function validateUrlOrThrow(
     response.headers.get("content-type")
   );
   if (contentTypeHeader.type === "text/turtle") {
-    reporter.info(GROUP, "Validating as turtle file.");
+    reporter.info(GROUP, "dataset.as-turtle");
     await validateDatasetFromTurtle(reporter, url, response);
   } else if (contentTypeHeader.type === "application/ld+json") {
-    reporter.info(GROUP, "Validating as JSON-LD file.");
+    reporter.info(GROUP, "dataset.as-jsonld");
     await validateDatasetFromJsonld(reporter, url, response);
   } else {
-    reporter.critical(
-      GROUP,
-      `Invalid content type '${contentTypeHeader.type}'.`
-    );
+    reporter.critical(GROUP, "dataset.unknown-content-type", {type: contentTypeHeader.type});
   }
 }

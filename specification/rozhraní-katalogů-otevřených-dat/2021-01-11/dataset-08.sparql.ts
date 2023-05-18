@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Datová sada má periodicitu aktualizace.");
+    reporter.info("sparql.group", "specification.has-periodicity");
   } else {
-    reporter.warning("SPARQL", "Datová sada nemá periodicitu aktualizace z požadovaného slovníku.");
+    reporter.warning("sparql.group", "specification.missing-periodicity");
   }
 };
 

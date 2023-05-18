@@ -2,7 +2,7 @@ import { ValidationReporter } from "./validator-api";
 import { streamN3ToRdf } from "./rdf-reader";
 import { validateDatasetFromQuads } from "./dataset-validator-quads";
 
-const GROUP = "NONE";
+const GROUP = "turtle.group";
 
 export async function validateDatasetFromTurtle(
   reporter: ValidationReporter,
@@ -13,9 +13,9 @@ export async function validateDatasetFromTurtle(
   try {
     quads = await streamN3ToRdf(response.body.getReader(), "Turtle");
   } catch (error) {
-    reporter.critical(GROUP, `Can't parse content as turtle: ${error}`);
+    reporter.critical(GROUP, "turtle.can-not-parse", {error});
     return;
   }
-  reporter.info(GROUP, `Loaded ${quads.length} statements.`);
+  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
   await validateDatasetFromQuads(reporter, quads, url);
 }

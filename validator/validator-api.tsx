@@ -59,7 +59,12 @@ export interface Message {
 
   readonly validator: string;
 
+  /**
+   * Can use {{place-holder}} for values from args.
+   */
   readonly message: string;
+
+  readonly args: object | undefined;
 }
 
 /**
@@ -68,20 +73,23 @@ export interface Message {
 export interface ValidationObserver {
   onMessage(message: Message): void;
 
-  onStatus(status:string): void;
+  onStatus(status:string, args: object | undefined): void;
 
   onResourceWillStart(resource: ResourceInValidation): void;
 
   onResourceDidEnd(resource: ResourceInValidation): void;
 }
 
+/**
+ * Implementation of observer that longs into a console.
+ */
 class ConsoleLogObserver implements ValidationObserver {
   onMessage(message: Message) {
     console.log("onMessage", message);
   }
 
-  onStatus(status:string): void {
-    console.log("onStatus", status);
+  onStatus(status:string, args: object | undefined): void {
+    console.log("onStatus", status, args);
   }
 
   onResourceWillStart(resource: ResourceInValidation): void {
@@ -107,36 +115,37 @@ export class ValidationReporter {
     this.observer = observer ?? new ConsoleLogObserver();
   }
 
-  private emitMessage(level: Level, validator: string, message: string): void {
+  private emitMessage(level: Level, validator: string, message: string, args: object): void {
     this.observer.onMessage({
       created: new Date(),
       level: level,
       validator: validator,
       message: message,
+      args: args,
     });
   }
 
-  info(validator: string, message: string): void {
-    this.emitMessage(Level.INFO, validator, message);
+  info(validator: string, message: string, args: object = undefined): void {
+    this.emitMessage(Level.INFO, validator, message, args);
   }
 
-  warning(validator: string, message: string): void {
-    this.emitMessage(Level.WARNING, validator, message);
+  warning(validator: string, message: string, args: object = undefined): void {
+    this.emitMessage(Level.WARNING, validator, message, args);
   }
 
-  error(validator: string, message: string): void {
-    this.emitMessage(Level.ERROR, validator, message);
+  error(validator: string, message: string, args: object = undefined): void {
+    this.emitMessage(Level.ERROR, validator, message, args);
   }
 
   /**
    * Throws an exception to terminate validation.
    */
-  critical(validator: string, message: string): void {
-    this.emitMessage(Level.CRITICAL, validator, message);
+  critical(validator: string, message: string, args: object = undefined): void {
+    this.emitMessage(Level.CRITICAL, validator, message, args);
   }
   
-  updateStatus(status: string) {
-    this.observer.onStatus(status);
+  updateStatus(status: string, args: object | undefined = undefined) {
+    this.observer.onStatus(status, args);
   }
 
   beginUrlValidation(url: string) {
@@ -160,4 +169,5 @@ export class ValidationReporter {
     const resource = this.resources.pop();
     this.observer.onResourceDidEnd(resource);
   }
+
 }

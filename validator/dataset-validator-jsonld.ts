@@ -3,7 +3,7 @@ import { validateDatasetWithJsonSchema } from "./json-schema";
 import { jsonLdToRdf } from "./rdf-reader";
 import { validateDatasetFromQuads } from "./dataset-validator-quads";
 
-const GROUP = "JSON-LD";
+const GROUP = "json-ld.group";
 
 export async function validateDatasetFromJsonld(
   reporter: ValidationReporter,
@@ -14,7 +14,7 @@ export async function validateDatasetFromJsonld(
   try {
     responseData = await response.json();
   } catch (error) {
-    reporter.critical(GROUP, `Can't parse content as JSON: ${error}`);
+    reporter.critical(GROUP, "json-ld.can-not-parse-json", {error});
     return;
   }
   await validateDatasetWithJsonSchema(reporter, responseData);
@@ -22,9 +22,9 @@ export async function validateDatasetFromJsonld(
   try {
     quads = await jsonLdToRdf(responseData);
   } catch (error) {
-    reporter.critical(GROUP, `Can't parse content as JSON-LD: ${error}`);
+    reporter.critical(GROUP, "json-ld.can-not-parse-json-ld", {error});
     return;
   }
-  reporter.info(GROUP, `Loaded ${quads.length} statements.`);
+  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
   await validateDatasetFromQuads(reporter, quads, url);
 }

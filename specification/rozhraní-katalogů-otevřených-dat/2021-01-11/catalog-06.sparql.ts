@@ -3,9 +3,9 @@ import {CatalogSparqlValidator} from "../../specification";
 const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
   const query = createQuery();
   if (await ask(query)) {
-    reporter.info("SPARQL", "V katalogu je poskytovatel OVM.");
+    reporter.info("sparql.group", "specification.has-publisher-ovm");
   } else {
-    reporter.warning("SPARQL", "V katalogu není poskytovatel OVM.");
+    reporter.warning("sparql.group", "specification.missing-publisher-ovm");
   }
 };
 

@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Datová sada má alespoň jedno téma.");
+    reporter.info("SPAsparql.groupRQL", "specification.has-theme");
   } else {
-    reporter.warning("SPARQL", "Datová sada nemá téma z požadovaného slovníku.");
+    reporter.warning("sparql.group", "specification.missing-theme");
   }
 };
 

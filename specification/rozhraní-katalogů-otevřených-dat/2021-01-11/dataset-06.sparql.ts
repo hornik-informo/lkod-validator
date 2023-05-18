@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Datová sada má alespoň jedno klíčové slovo.");
+    reporter.info("sparql.group", "specification.has-keyword");
   } else {
-    reporter.warning("SPARQL", "Datová sada nemá klíčová slova.");
+    reporter.warning("sparql.group", "specification.missing-keyword");
   }
 };
 

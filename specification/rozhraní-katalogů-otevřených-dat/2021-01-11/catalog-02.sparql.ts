@@ -3,9 +3,9 @@ import {CatalogSparqlValidator} from "../../specification";
 const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
   const query = createQuery();
   if (await ask(query)) {
-    reporter.info("SPARQL", "V katalogu je odkaz na nějaký dataset.");
+    reporter.info("sparql.group", "specification.has-dataset");
   } else {
-    reporter.error("SPARQL", "V katalogu není odkaz na nějaký dataset.");
+    reporter.error("sparql.group", "specification.has-no-dataset");
   }
 };
 

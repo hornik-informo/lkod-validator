@@ -4,7 +4,7 @@ import { jsonLdToRdf } from "./rdf-reader";
 import { validateCatalogFromQuads } from "./catalog-validator-quads";
 import { validateDatasetFromUrl } from "./dataset-validator";
 
-const GROUP = "JSON-LD";
+const GROUP = "json-ld.group";
 
 export async function validateCatalogFromJsonLd(
   reporter: ValidationReporter,
@@ -16,7 +16,7 @@ export async function validateCatalogFromJsonLd(
   try {
     responseData = await response.json();
   } catch (error) {
-    reporter.critical(GROUP, `Can't parse content as JSON: ${error}`);
+    reporter.critical(GROUP, "json-ld.can-not-parse-json", {error});
     return;
   }
   // Validate using JSON Schema.
@@ -26,10 +26,10 @@ export async function validateCatalogFromJsonLd(
   try {
     quads = await jsonLdToRdf(responseData);
   } catch (error) {
-    reporter.critical(GROUP, `Can't parse content as JSON-LD: ${error}`);
+    reporter.critical(GROUP, "json-ld.can-not-parse-json-ld", {error});
     return;
   }
-  reporter.info(GROUP, `Loaded ${quads.length} statements.`);
+  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
   // Validate as RDF.
   await validateCatalogFromQuads(reporter, validateDatasetFromUrl, quads, url);
 }

@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Datová sada má poskytovatele.");
+    reporter.info("sparql.group", "specification.has-publisher");
   } else {
-    reporter.error("SPARQL", "Datová sada nemá poskytovatele.");
+    reporter.error("sparql.group", "specification.missing-publisher");
   }
 };
 

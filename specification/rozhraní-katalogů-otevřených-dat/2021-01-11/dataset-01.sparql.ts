@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Nalezena datová sada.");
+    reporter.info("sparql.group", "specification.dataset-found");
   } else {
-    reporter.error("SPARQL", "Nenalezena datová sada.");
+    reporter.error("sparql.group", "specification.missing-dataset");
   }
 };
 

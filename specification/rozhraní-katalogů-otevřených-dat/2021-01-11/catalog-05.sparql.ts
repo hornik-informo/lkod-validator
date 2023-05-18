@@ -3,9 +3,9 @@ import {CatalogSparqlValidator} from "../../specification";
 const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
   const query = createQuery();
   if (await ask(query)) {
-    reporter.info("SPARQL", "V katalogu je poskytovatel.");
+    reporter.info("sparql.group", "specification.has-publisher");
   } else {
-    reporter.error("SPARQL", "V katalogu není poskytovatel.");
+    reporter.error("sparql.group", "specification.missing-publisher");
   }
 };
 

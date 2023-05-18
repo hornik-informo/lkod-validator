@@ -51,11 +51,11 @@ ex:PovinnéAtributyKatalogu
   ] .`;
 
 const pass = (reporter: ValidationReporter) => {
-  reporter.info("SHACL", `Dokument splňuje SHACL.`);
+  reporter.info("shacl.group", "specification.shacl-valid");
 };
 
 const failed = (reporter: ValidationReporter) => {
-  reporter.error("SHACL", `Dokument nesplňuje SHACL.`);
+  reporter.error("shacl.group", "specification.shacl-invalid");
 };
 
 export default {

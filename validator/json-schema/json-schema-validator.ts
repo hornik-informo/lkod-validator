@@ -11,7 +11,7 @@ addSchema(patchJsonSchemaPattern(v20200701.TextsJsonSchema));
 addSchema(patchJsonSchemaPattern(v20210111.Catalog.JSON_SCHEMA));
 addSchema(patchJsonSchemaPattern(v20210111.Dataset.JSON_SCHEMA));
 
-const GROUP = "JSON-SCHEMA";
+const GROUP = "json-schema.group";
 
 const CATALOG_SCHEMA_ID = v20210111.Catalog.JSON_SCHEMA["$id"];
 
@@ -44,9 +44,9 @@ export async function validateCatalogWithJsonSchema(
 ) {
   const report = await validate(CATALOG_SCHEMA_ID, content, BASIC);
   if (report.valid) {
-    reporter.info(GROUP, "JSON is valid according to JSON schema.");
+    reporter.info(GROUP, "json-schema.valid");
   } else {
-    reporter.error(GROUP, "JSON is not valid according to JSON schema.");
+    reporter.error(GROUP, "json-schema.invalid");
   }
 }
 
@@ -56,8 +56,8 @@ export async function validateDatasetWithJsonSchema(
 ) {
   const report = await validate(DATASET_SCHEMA_ID, content, BASIC);
   if (report.valid) {
-    reporter.info(GROUP, "JSON is valid according to JSON schema.");
+    reporter.info(GROUP, "json-schema.valid");
   } else {
-    reporter.error(GROUP, "JSON is not valid according to JSON schema.");
+    reporter.error(GROUP, "json-schema.invalid");
   }
 }

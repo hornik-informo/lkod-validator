@@ -1,11 +1,11 @@
-import { ValidationReporter } from "../validator-api";
+import {ValidationReporter} from "../validator-api";
 
 export type ContentTypeHeader = {
   type: string;
   parameters: Record<string, string>;
 };
 
-const GROUP = "HTTP";
+const GROUP = "http.group";
 
 /**
  * Start a fetch request and return response object.
@@ -19,20 +19,20 @@ export async function initiateResourceFetch(
     response = await fetch(url);
   } catch (error) {
     report.critical(
-      GROUP,
-      `Fetch of '${url}' failed, with error message '${error.message}'.`
-    );
+      GROUP, "http.fetch-failed", {
+        url: url,
+        error: error.message
+      });
     return null;
   }
   if (!response.ok) {
     // Status is not in the range 200-299.
-    report.critical(
-      GROUP,
-      `Can't fetch data, status '${response.status}'` +
-        `text: '${response.statusText}'.`
-    );
+    report.critical(GROUP, "http.invalid-response", {
+      code: response.status,
+      text: response.statusText
+    });
   } else {
-    report.info(GROUP, "Fetching data from URL.");
+    report.info(GROUP, "http.success");
     return response;
   }
 }

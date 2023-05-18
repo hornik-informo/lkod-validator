@@ -3,7 +3,7 @@ import * as RDF from "@rdfjs/types";
 import { ValidationReporter } from "./validator-api";
 import { validateDatasetWithSparql } from "./sparql";
 
-const GROUP = "RDF";
+const GROUP = "quads.group";
 
 const RDF_TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
@@ -27,16 +27,16 @@ function validateDatasetUrl(
 ): string[] {
   const datasets = selectDatasets(quads);
   if (datasets.length === 0) {
-    reporter.error(GROUP, "No dataset resource found.");
+    reporter.error(GROUP, "quads.missing-dataset");
   } else if (datasets.length > 1) {
-    reporter.error(GROUP, `Expected one dataset, found ${datasets.length}.`);
+    reporter.error(GROUP, "quads.multiple-datasets", {count: datasets.length});
   } else if (datasets[0] !== expectedDatasetUrl) {
-    reporter.error(
-      GROUP,
-      `Expected dataset '${expectedDatasetUrl}', 'found ${datasets.length}'.`
-    );
+    reporter.error(GROUP, "quads.unexpected-dataset", {
+      expected: expectedDatasetUrl,
+      actual: datasets[0]
+    });
   } else {
-    reporter.info(GROUP, `Found dataset '${datasets[0]}'`);
+    reporter.info(GROUP, "quads.dataset-url", {url: datasets[0]});
   }
   return datasets;
 }

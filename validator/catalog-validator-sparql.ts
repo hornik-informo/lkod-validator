@@ -4,7 +4,7 @@ import { ValidationReporter } from "./validator-api";
 import { validateCatalogFromQuads } from "./catalog-validator-quads";
 import { validateDatasetFromQuads } from "./dataset-validator-quads";
 
-const GROUP = "SPARQL";
+const GROUP = "sparql.group";
 
 const fetcher = new SparqlEndpointFetcher();
 
@@ -22,10 +22,10 @@ export async function validateCatalogFromSparql(
   try {
     quads = await executeConstruct(url, query);
   } catch (error) {
-    reporter.critical(GROUP, `Can't fetch data from endpoint: ${error}`);
+    reporter.critical(GROUP, "fetch-failed",{error});
     return;
   }
-  reporter.info(GROUP, `Loaded ${quads.length} statements.`);
+  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
   // We use custom dataset validator, as we do not want to load
   // any additional data.
   const validateDataset = async (
@@ -37,7 +37,7 @@ export async function validateCatalogFromSparql(
     try {
       quads = await executeConstruct(url, query);
     } catch (error) {
-      reporter.error(GROUP, `Can't fetch data from endpoint: ${error}`);
+      reporter.error(GROUP, "fetch-failed",{error});
       return;
     }
     // Validate as RDF.

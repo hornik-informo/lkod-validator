@@ -64,6 +64,10 @@ interface HomeState {
    * Status message.
    */
   statusMessage: string;
+  /**
+   * Arguments for status message.
+   */
+  statusArgs: object | undefined;
 }
 
 export function useHomeController() {
@@ -84,8 +88,8 @@ export function useHomeController() {
       onMessage(message: Message) {
         dispatch({type: MESSAGE, value: message});
       },
-      onStatus(status: string) {
-        dispatch({type: STATUS, value: status});
+      onStatus(status:string, args: object | undefined) {
+        dispatch({type: STATUS, value: status, args: args});
       },
       onResourceWillStart(resource: ResourceInValidation) {
         dispatch({type: RESOURCE_OPEN, value: resource});
@@ -134,7 +138,7 @@ const homeReducer: Reducer<HomeState, any> = (state, action): HomeState => {
     case MESSAGE:
       return onMessage(state, action.value);
     case STATUS:
-      return onStatus(state, action.value);
+      return onStatus(state, action.value, action.args);
     case RESOURCE_OPEN:
       return onResourceOpen(state, action.value);
     case RESOURCE_CLOSE:
@@ -172,10 +176,11 @@ function onMessage(state: HomeState, message: Message): HomeState {
   };
 }
 
-function onStatus(state: HomeState, status: String): HomeState {
+function onStatus(state: HomeState, status: String, args: object | undefined): HomeState {
   return {
     ...state,
-    statusMessage: status
+    statusMessage: status,
+    statusArgs: args,
   };
 }
 
@@ -225,4 +230,5 @@ const initialState: HomeState = {
   working: false,
   groups: [],
   statusMessage: "",
+  statusArgs: undefined,
 };
