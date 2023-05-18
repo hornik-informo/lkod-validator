@@ -27,17 +27,22 @@ async function prepareEngine(content: RDF.Quad[]): Promise<Engine> {
 }
 
 async function validateCatalog(reporter: ValidationReporter, engine: Engine) {
-  for (const sparqlAsk of v20210111.Catalog.SPARQL.ASK) {
-    const query = sparqlAsk.create();
-    const result = await engine.queryBoolean(query);
-    if (result) {
-      sparqlAsk.pass(reporter);
-    } else {
-      sparqlAsk.failed(reporter);
-    }
+  const ask = (query:string) => engine.queryBoolean(query);
+  const select = (query:string) => executeSelect(engine, query);
+  for (const validator of v20210111.Catalog.SPARQL) {
+    await validator({ask, select, reporter});
   }
 }
 
+async function executeSelect(engine: Engine, query: string): Promise<object[]> {
+  const stream = await engine.queryBindings(query);
+  return new Promise((accept, reject) => {
+    const collector = [];
+    stream.on("data", binding => collector.push(binding));
+    stream.on("end", () => accept(collector));
+    stream.on("error", error => reject(error));
+  });
+}
 export async function validateDatasetWithSparql(
   reporter: ValidationReporter,
   content: RDF.Quad[],
@@ -52,28 +57,9 @@ async function validateDatasets(
   engine: Engine,
   dataset: string
 ): Promise<undefined> {
-  for (const sparqlAsk of v20210111.Dataset.SPARQL.ASK) {
-    const query = sparqlAsk.create(dataset);
-    const result = await engine.queryBoolean(query);
-    if (result) {
-      sparqlAsk.pass(reporter);
-    } else {
-      sparqlAsk.failed(reporter);
-    }
+  const ask = (query:string) => engine.queryBoolean(query);
+  const select = (query:string) => executeSelect(engine, query);
+  for (const validator of v20210111.Dataset.SPARQL) {
+    await validator({dataset, ask, select, reporter});
   }
-  for (const sparqlAsk of v20210111.Dataset.SPARQL.SELECT) {
-    const query = sparqlAsk.create(dataset);
-    const result = await executeSelect(engine, query);
-    sparqlAsk.handle(reporter, result);
-  }
-}
-
-async function executeSelect(engine: Engine, query: string): Promise<object[]> {
-  const stream = await engine.queryBindings(query);
-  return new Promise((accept, reject) => {
-    const collector = [];
-    stream.on("data", binding => collector.push(binding));
-    stream.on("end", () => accept(collector));
-    stream.on("data", error => reject(error));
-  });
 }
