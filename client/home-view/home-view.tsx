@@ -63,7 +63,6 @@ export function HomeView() {
   return (
     <div>
       <h1>{t("title")}</h1>
-      <hr />
       <LoaderIndicator show={state.working} />
       <br />
       <div>
@@ -82,6 +81,8 @@ export function HomeView() {
       </div>
       <br />
       <hr />
+      <br />
+      {state.statusMessage}
       <br />
       <List>
         {state.groups.map(

@@ -78,8 +78,9 @@ async function validateDatasets(
 ): Promise<undefined> {
   const datasets = selectDatasets(quads);
   reporter.info(GROUP, `Found ${datasets.length} datasets.`);
-  let counter = 0;
+  let counter = 1;
   for (const dataset of datasets) {
+    reporter.updateStatus(`Validating dataset ${counter} / ${datasets.length}`);
     await datasetValidatorCallback(reporter, dataset);
     ++counter;
   }

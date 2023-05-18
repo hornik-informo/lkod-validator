@@ -19,6 +19,7 @@ export async function validateCatalogFromUrl(
   url: string
 ): Promise<undefined> {
   reporter.beginUrlValidation(url);
+  reporter.updateStatus("Validating catalog ...");
   try {
     await validateUrlOrThrow(reporter, url);
   } catch (error) {
@@ -27,6 +28,7 @@ export async function validateCatalogFromUrl(
   } finally {
     reporter.endResourceValidation();
   }
+  reporter.updateStatus("Validace dokončena.");
 }
 
 async function validateUrlOrThrow(

@@ -57,9 +57,9 @@ export interface Message {
 
   readonly level: Level;
 
-  readonly validator: String;
+  readonly validator: string;
 
-  readonly message: String;
+  readonly message: string;
 }
 
 /**
@@ -67,6 +67,8 @@ export interface Message {
  */
 export interface ValidationObserver {
   onMessage(message: Message): void;
+
+  onStatus(status:string): void;
 
   onResourceWillStart(resource: ResourceInValidation): void;
 
@@ -76,6 +78,10 @@ export interface ValidationObserver {
 class ConsoleLogObserver implements ValidationObserver {
   onMessage(message: Message) {
     console.log("onMessage", message);
+  }
+
+  onStatus(status:string): void {
+    console.log("onStatus", status);
   }
 
   onResourceWillStart(resource: ResourceInValidation): void {
@@ -101,7 +107,7 @@ export class ValidationReporter {
     this.observer = observer ?? new ConsoleLogObserver();
   }
 
-  private emitMessage(level: Level, validator: String, message: String): void {
+  private emitMessage(level: Level, validator: string, message: string): void {
     this.observer.onMessage({
       created: new Date(),
       level: level,
@@ -110,23 +116,27 @@ export class ValidationReporter {
     });
   }
 
-  info(validator: String, message: String): void {
+  info(validator: string, message: string): void {
     this.emitMessage(Level.INFO, validator, message);
   }
 
-  warning(validator: String, message: String): void {
+  warning(validator: string, message: string): void {
     this.emitMessage(Level.WARNING, validator, message);
   }
 
-  error(validator: String, message: String): void {
+  error(validator: string, message: string): void {
     this.emitMessage(Level.ERROR, validator, message);
   }
 
   /**
    * Throws an exception to terminate validation.
    */
-  critical(validator: String, message: String): void {
+  critical(validator: string, message: string): void {
     this.emitMessage(Level.CRITICAL, validator, message);
+  }
+  
+  updateStatus(status: string) {
+    this.observer.onStatus(status);
   }
 
   beginUrlValidation(url: string) {

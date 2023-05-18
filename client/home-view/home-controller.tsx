@@ -16,6 +16,8 @@ const VALIDATION_END = "VALIDATION_END";
 
 const MESSAGE = "MESSAGE";
 
+const STATUS = "STATUS";
+
 const RESOURCE_OPEN = "RESOURCE_OPEN";
 
 const RESOURCE_CLOSE = "RESOURCE_CLOSE";
@@ -58,6 +60,10 @@ interface HomeState {
    * Groups of messages.
    */
   groups: MessageGroup[];
+  /**
+   * Status message.
+   */
+  statusMessage: string;
 }
 
 export function useHomeController() {
@@ -77,6 +83,9 @@ export function useHomeController() {
     const observer: ValidationObserver = {
       onMessage(message: Message) {
         dispatch({type: MESSAGE, value: message});
+      },
+      onStatus(status: string) {
+        dispatch({type: STATUS, value: status});
       },
       onResourceWillStart(resource: ResourceInValidation) {
         dispatch({type: RESOURCE_OPEN, value: resource});
@@ -124,6 +133,8 @@ const homeReducer: Reducer<HomeState, any> = (state, action): HomeState => {
       };
     case MESSAGE:
       return onMessage(state, action.value);
+    case STATUS:
+      return onStatus(state, action.value);
     case RESOURCE_OPEN:
       return onResourceOpen(state, action.value);
     case RESOURCE_CLOSE:
@@ -158,6 +169,13 @@ function onMessage(state: HomeState, message: Message): HomeState {
         level: Math.max(last.level, message.level)
       },
     ],
+  };
+}
+
+function onStatus(state: HomeState, status: String): HomeState {
+  return {
+    ...state,
+    statusMessage: status
   };
 }
 
@@ -206,4 +224,5 @@ const initialState: HomeState = {
   // "https://open.datakhk.cz/katalog.jsonld",
   working: false,
   groups: [],
+  statusMessage: "",
 };
