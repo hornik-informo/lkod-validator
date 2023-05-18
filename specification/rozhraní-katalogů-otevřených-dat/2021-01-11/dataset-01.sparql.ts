@@ -1,21 +1,18 @@
-import { ValidationReporter } from "../../../validator";
+import {DatasetSparqlValidator} from "../../specification";
 
-const create = (dataset: string) => `
+const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
+  const query = createQuery(dataset);
+  if (await ask(query)) {
+    reporter.info("SPARQL", "Nalezena datová sada.");
+  } else {
+    reporter.error("SPARQL", "Nenalezena datová sada.");
+  }
+};
+
+export default validator;
+
+const createQuery = (dataset: string) => `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 ASK {
-  <${dataset}> a dcat:Dataset
+  <${dataset}> a dcat:Dataset .
 }`;
-
-const pass = (reporter: ValidationReporter) => {
-  reporter.info("SPARQL", `Nalezena datová sada.`);
-};
-
-const failed = (reporter: ValidationReporter) => {
-  reporter.error("SPARQL", `Nenalezena datová sada.`);
-};
-
-export default {
-  create,
-  pass,
-  failed,
-};

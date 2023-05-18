@@ -1,24 +1,21 @@
-import { ValidationReporter } from "../../../validator";
+import {CatalogSparqlValidator} from "../../specification";
 
-const create = () => `
+const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
+  const query = createQuery();
+  if (await ask(query)) {
+    reporter.info("SPARQL", "V katalogu je poskytovatel.");
+  } else {
+    reporter.error("SPARQL", "V katalogu není poskytovatel.");
+  }
+};
+
+export default validator;
+
+const createQuery = () => `
 PREFIX dcterms: <http://purl.org/dc/terms/>
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 ASK {
   [] a dcat:Catalog ;
     dcterms:publisher ?publisher .
-    FILTER(isIRI(?publisher))
+  FILTER(isIRI(?publisher))
 }`;
-
-const pass = (reporter: ValidationReporter) => {
-  reporter.info("SPARQL", `V katalogu je poskytovatel.`);
-};
-
-const failed = (reporter: ValidationReporter) => {
-  reporter.error("SPARQL", `V katalogu není poskytovatel.`);
-};
-
-export default {
-  create,
-  pass,
-  failed,
-};

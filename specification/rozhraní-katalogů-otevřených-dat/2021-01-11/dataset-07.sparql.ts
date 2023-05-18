@@ -3,9 +3,9 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPARQL", "Datová sada má český název.");
+    reporter.info("SPARQL", "Datová sada má alespoň jedno téma.");
   } else {
-    reporter.error("SPARQL", "Datová sada nemá český název.");
+    reporter.warning("SPARQL", "Datová sada nemá téma z požadovaného slovníku.");
   }
 };
 
@@ -13,8 +13,10 @@ export default validator;
 
 const createQuery = (dataset: string) => `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+
 ASK {
   <${dataset}> a dcat:Dataset ;
-    dcterms:title ?title .
-  FILTER(langMatches(LANG(?title), "cs"))
+    dcat:theme ?téma .
+  FILTER(STRSTARTS(STR(?téma), "http://publications.europa.eu/resource/authority/data-theme/"))
 }`;

@@ -1,21 +1,18 @@
-import { ValidationReporter } from "../../../validator";
+import {CatalogSparqlValidator} from "../../specification";
 
-const create = () => `
+const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
+  const query = createQuery();
+  if (await ask(query)) {
+    reporter.info("SPARQL", "Je tam katalog.");
+  } else {
+    reporter.critical("SPARQL", "Není tam katalog.");
+  }
+};
+
+export default validator;
+
+const createQuery = () => `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
 ASK {
   [] a dcat:Catalog
 }`;
-
-const pass = (reporter: ValidationReporter) => {
-  reporter.info("SPARQL", "Je tam katalog.");
-};
-
-const failed = (reporter: ValidationReporter) => {
-  reporter.critical("SPARQL", `Není tam katalog.`);
-};
-
-export default {
-  create,
-  pass,
-  failed,
-};
