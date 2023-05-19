@@ -19,7 +19,7 @@ i18n
     fallbackLng: "cs",
     supportedLngs: [
       "cs",
-      "en",
+      // "en",
     ],
     debug: process.env.NODE_ENV === "development",
     interpolation: {
