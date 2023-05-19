@@ -3,7 +3,7 @@ import {DatasetSparqlValidator} from "../../specification";
 const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
-    reporter.info("SPAsparql.groupRQL", "specification.has-theme");
+    reporter.info("sparql.group", "specification.has-theme");
   } else {
     reporter.warning("sparql.group", "specification.missing-theme");
   }
