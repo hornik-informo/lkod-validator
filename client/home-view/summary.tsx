@@ -14,21 +14,12 @@ export const Summary = ({
   catalog,
   datasets,
   entrypoint,
-  ready,
 }: {
   catalog: CatalogSummary;
   datasets: DatasetSummary[];
   entrypoint: EntrypointSummary;
-  ready: boolean;
 }) => {
-  if (!ready) {
-    return <>Výsledky se zde zobrazí po spuštění validace.</>;
-  }
-  if (
-    entrypoint.level === Level.CRITICAL &&
-    catalogs.length === 0 &&
-    datasets.length === 0
-  ) {
+  if (entrypoint.level === Level.CRITICAL && datasets.length === 0) {
     // There is no need to render anything.
     return <EntrypointCritical entrypoint={entrypoint} />;
   }
@@ -48,15 +39,11 @@ export const Summary = ({
   }
   return (
     <>
-      <br />
       {entrypointContent}
-      <br />
       <br />
       {catalogContent}
       <br />
-      <br />
       {datasetsContent}
-      <br />
     </>
   );
 };

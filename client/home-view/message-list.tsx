@@ -9,13 +9,7 @@ import { MessageListGroup } from "./message-list-group";
 import { Level } from "../../validator";
 import { useTranslation } from "react-i18next";
 
-export const MessageList = ({
-  groups,
-  ready,
-}: {
-  groups: MessageGroup[];
-  ready: boolean;
-}) => {
+export const MessageList = ({ groups }: { groups: MessageGroup[] }) => {
   const { t } = useTranslation();
   const [filter, setFilter] = useState(Level.INFO);
   const visibleItems = groups
@@ -30,18 +24,13 @@ export const MessageList = ({
   return (
     <>
       <Filter value={filter} onUpdateValue={setFilter} />
-      <List>{selectContent(t, ready, groups, visibleItems)}</List>
+      <List>{selectContent(t, groups, visibleItems)}</List>
     </>
   );
 };
 
-function selectContent(
-  t,
-  ready: boolean,
-  groups: MessageGroup[],
-  items: JSX.Element[]
-) {
-  if (!ready) {
+function selectContent(t, groups: MessageGroup[], items: JSX.Element[]) {
+  if (groups.length === 0) {
     return <>{t("home-view.no-groups")}</>;
   } else if (items.length > 0) {
     return items;

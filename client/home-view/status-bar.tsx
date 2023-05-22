@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import Fade from "@mui/material/Fade";
 import LinearProgress from "@mui/material/LinearProgress";
+import Box from "@mui/material/Box";
 
 export const StatusBar = ({
   working,
@@ -14,19 +14,17 @@ export const StatusBar = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <>
+    <Box sx={{ my: 2 }}>
+      {message.length === 0 ? <br /> : t(message, args)}
       <LoaderIndicator show={working} />
-      <br />
-      {t(message, args)}
-      <br />
-    </>
+    </Box>
   );
 };
 
 function LoaderIndicator({ show }: { show: boolean }) {
-  return (
-    <Fade in={show} style={{ transitionDelay: show ? "300ms" : "0ms" }}>
-      <LinearProgress />
-    </Fade>
-  );
+  if (show) {
+    return <LinearProgress sx={{ my: 1 }} />;
+  } else {
+    return <hr />;
+  }
 }
