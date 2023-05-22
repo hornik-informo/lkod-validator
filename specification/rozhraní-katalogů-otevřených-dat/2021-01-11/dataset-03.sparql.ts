@@ -1,6 +1,10 @@
-import {DatasetSparqlValidator} from "../../specification";
+import { DatasetSparqlValidator } from "../../specification";
 
-const validator: DatasetSparqlValidator = async ({dataset, ask, reporter}) => {
+const validator: DatasetSparqlValidator = async ({
+  dataset,
+  ask,
+  reporter,
+}) => {
   const query = createQuery(dataset);
   if (await ask(query)) {
     reporter.info("sparql.group", "specification.has-description");

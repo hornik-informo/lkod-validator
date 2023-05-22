@@ -1,6 +1,6 @@
-import {CatalogSparqlValidator} from "../../specification";
+import { CatalogSparqlValidator } from "../../specification";
 
-const validator: CatalogSparqlValidator = async ({ask, reporter}) => {
+const validator: CatalogSparqlValidator = async ({ ask, reporter }) => {
   const query = createQuery();
   if (await ask(query)) {
     reporter.info("sparql.group", "specification.has-publisher");
