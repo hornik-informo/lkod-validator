@@ -1,19 +1,19 @@
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import React from "react";
-import {useTranslation} from "react-i18next";
-import {useInputAreaController} from "./input-area-controller";
+import { useTranslation } from "react-i18next";
+import { useInputAreaController } from "./input-area-controller";
 
-export const InputArea = ({onStartValidation, disabled}: {
-  onStartValidation: (url: string) => void,
-  disabled: boolean
+export const InputArea = ({
+  onStartValidation,
+  disabled,
+}: {
+  onStartValidation: (url: string) => void;
+  disabled: boolean;
 }) => {
-  const {t} = useTranslation();
-  const {
-    url,
-    onChangeUrl,
-    onSubmit
-  } = useInputAreaController(onStartValidation);
+  const { t } = useTranslation();
+  const { url, onChangeUrl, onSubmit } =
+    useInputAreaController(onStartValidation);
   return (
     <div>
       <TextField
@@ -25,10 +25,10 @@ export const InputArea = ({onStartValidation, disabled}: {
         disabled={disabled}
         fullWidth
       />
-      <br/> <br/>
+      <br /> <br />
       <Button variant="outlined" onClick={onSubmit} disabled={disabled}>
         {t("home-view.submit")}
       </Button>
     </div>
-  )
+  );
 };

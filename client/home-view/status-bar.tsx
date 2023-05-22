@@ -1,28 +1,32 @@
 import React from "react";
-import {useTranslation} from "react-i18next";
+import { useTranslation } from "react-i18next";
 import Fade from "@mui/material/Fade";
 import LinearProgress from "@mui/material/LinearProgress";
 
-
-export const StatusBar = ({working, message, args}: {
-  working: boolean,
-  message: string,
-  args: object | undefined,
+export const StatusBar = ({
+  working,
+  message,
+  args,
+}: {
+  working: boolean;
+  message: string;
+  args: object | undefined;
 }) => {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   return (
     <>
-      <LoaderIndicator show={working}/>
-      <br/>
+      <LoaderIndicator show={working} />
+      <br />
       {t(message, args)}
+      <br />
     </>
-  )
+  );
 };
 
-function LoaderIndicator({show}: { show: boolean }) {
+function LoaderIndicator({ show }: { show: boolean }) {
   return (
-    <Fade in={show} style={{transitionDelay: show ? "300ms" : "0ms"}}>
-      <LinearProgress/>
+    <Fade in={show} style={{ transitionDelay: show ? "300ms" : "0ms" }}>
+      <LinearProgress />
     </Fade>
   );
 }
