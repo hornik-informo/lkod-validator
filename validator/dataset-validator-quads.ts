@@ -14,6 +14,7 @@ export async function validateDatasetFromQuads(
   quads: RDF.Quad[],
   expectedDatasetUrl: string
 ): Promise<undefined> {
+  reporter.contentAsRdf(quads);
   const datasets = validateDatasetUrl(reporter, quads, expectedDatasetUrl);
   for (const dataset of datasets) {
     await validateDatasetWithSparql(reporter, quads, dataset);
@@ -27,16 +28,18 @@ function validateDatasetUrl(
 ): string[] {
   const datasets = selectDatasets(quads);
   if (datasets.length === 0) {
-    reporter.error(GROUP, "quads.missing-dataset");
+    reporter.critical(GROUP, "quads.missing-dataset");
   } else if (datasets.length > 1) {
-    reporter.error(GROUP, "quads.multiple-datasets", {count: datasets.length});
+    reporter.error(GROUP, "quads.multiple-datasets", {
+      count: datasets.length,
+    });
   } else if (datasets[0] !== expectedDatasetUrl) {
     reporter.error(GROUP, "quads.unexpected-dataset", {
       expected: expectedDatasetUrl,
-      actual: datasets[0]
+      actual: datasets[0],
     });
   } else {
-    reporter.info(GROUP, "quads.dataset-url", {url: datasets[0]});
+    reporter.info(GROUP, "quads.dataset-url", { url: datasets[0] });
   }
   return datasets;
 }

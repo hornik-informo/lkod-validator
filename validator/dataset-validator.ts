@@ -1,7 +1,7 @@
-import {ValidationReporter} from "./validator-api";
-import {initiateResourceFetch, parseContentType} from "./url";
-import {validateDatasetFromJsonld} from "./dataset-validator-jsonld";
-import {validateDatasetFromTurtle} from "./dataset-validator-turtle";
+import { ResourceContentType, ValidationReporter } from "./validator-api";
+import { initiateResourceFetch, parseContentType } from "./url";
+import { validateDatasetFromJsonld } from "./dataset-validator-jsonld";
+import { validateDatasetFromTurtle } from "./dataset-validator-turtle";
 
 const GROUP = "dataset.group";
 
@@ -27,16 +27,23 @@ async function validateUrlOrThrow(
   if (response === null) {
     return;
   }
-  const contentTypeHeader = parseContentType(
+  const contentType = parseContentType(
     response.headers.get("content-type")
-  );
-  if (contentTypeHeader.type === "text/turtle") {
+  ).type;
+  if (contentType === "text/turtle") {
+    reporter.contentType(ResourceContentType.TURTLE);
     reporter.info(GROUP, "dataset.as-turtle");
     await validateDatasetFromTurtle(reporter, url, response);
-  } else if (contentTypeHeader.type === "application/ld+json") {
+  } else if (
+    contentType === "application/ld+json" ||
+    contentType === "application/json"
+  ) {
+    reporter.contentType(ResourceContentType.JSONLD);
     reporter.info(GROUP, "dataset.as-jsonld");
     await validateDatasetFromJsonld(reporter, url, response);
   } else {
-    reporter.critical(GROUP, "dataset.unknown-content-type", {type: contentTypeHeader.type});
+    reporter.critical(GROUP, "dataset.unknown-content-type", {
+      type: contentType,
+    });
   }
 }

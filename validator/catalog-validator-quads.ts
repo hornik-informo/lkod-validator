@@ -1,8 +1,8 @@
 import * as RDF from "@rdfjs/types";
 
-import {ValidationReporter} from "./validator-api";
-import {validateCatalogWithShacl} from "./shacl";
-import {validateCatalogWithSparql} from "./sparql";
+import { ValidationReporter } from "./validator-api";
+import { validateCatalogWithShacl } from "./shacl";
+import { validateCatalogWithSparql } from "./sparql";
 
 const GROUP = "quads.group";
 
@@ -31,6 +31,7 @@ export async function validateCatalogFromQuads(
     expectedCatalogUrl = catalogs[0];
   }
   reporter.beginCatalogValidation(expectedCatalogUrl);
+  reporter.contentAsRdf(quads);
   validateCatalogUrl(reporter, catalogs, expectedCatalogUrl);
   await validateCatalogWithShacl(reporter, quads);
   await validateCatalogWithSparql(reporter, quads);
@@ -41,9 +42,9 @@ export async function validateCatalogFromQuads(
 function selectCatalogs(quads: RDF.Quad[]): string[] {
   const result = [];
   for (const {
-    subject: {value: subject},
-    predicate: {value: predicate},
-    object: {value: object},
+    subject: { value: subject },
+    predicate: { value: predicate },
+    object: { value: object },
   } of quads) {
     if (predicate === RDF_TYPE && object === DCAT_CATALOG) {
       result.push(subject);
@@ -58,16 +59,18 @@ function validateCatalogUrl(
   expectedCatalogUrl: string
 ) {
   if (catalogs.length === 0) {
-    reporter.error(GROUP, "quads.missing-catalog");
+    reporter.critical(GROUP, "quads.missing-catalog");
   } else if (catalogs.length > 1) {
-    reporter.error(GROUP, "quads.multiple-catalogs", {count: catalogs.length});
+    reporter.error(GROUP, "quads.multiple-catalogs", {
+      count: catalogs.length,
+    });
   } else if (catalogs[0] !== expectedCatalogUrl) {
     reporter.error(GROUP, "quads.unexpected-catalog", {
       expected: expectedCatalogUrl,
-      actual: catalogs[0]
+      actual: catalogs[0],
     });
   } else {
-    reporter.info(GROUP, "quads.catalog-url", {url: catalogs});
+    reporter.info(GROUP, "quads.catalog-url", { url: catalogs });
   }
 }
 
@@ -77,14 +80,16 @@ async function validateDatasets(
   quads: RDF.Quad[]
 ): Promise<undefined> {
   const datasets = selectDatasets(quads);
-  reporter.info(GROUP, "quads.catalog-count", {count: datasets.length});
+  reporter.info(GROUP, "quads.catalog-count", { count: datasets.length });
   let counter = 1;
   for (const dataset of datasets) {
-    reporter.updateStatus("quads.status-validating-datasets",
-      {index: counter, total: datasets.length});
+    reporter.updateStatus("quads.status-validating-datasets", {
+      index: counter,
+      total: datasets.length,
+    });
     await datasetValidatorCallback(reporter, dataset);
     ++counter;
-    if (counter > 2) {
+    if (process.env.NODE_ENV === "development" && counter > 12) {
       break;
     }
   }
@@ -93,8 +98,8 @@ async function validateDatasets(
 function selectDatasets(quads: RDF.Quad[]): string[] {
   const result = [];
   for (const {
-    predicate: {value: predicate},
-    object: {value: object},
+    predicate: { value: predicate },
+    object: { value: object },
   } of quads) {
     if (predicate === DCAT_HAS_DATASET) {
       result.push(object);

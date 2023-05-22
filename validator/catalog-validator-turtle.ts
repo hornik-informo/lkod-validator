@@ -15,10 +15,10 @@ export async function validateCatalogFromTurtle(
   try {
     quads = await streamN3ToRdf(response.body.getReader(), "Turtle");
   } catch (error) {
-    reporter.critical(GROUP, "turtle.can-not-parse", {error});
+    reporter.critical(GROUP, "turtle.can-not-parse", { error });
     return;
   }
-  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
+  reporter.info(GROUP, "validator.quad-count", { count: quads.length });
   // Validate as RDF.
   await validateCatalogFromQuads(reporter, validateDatasetFromUrl, quads, url);
 }

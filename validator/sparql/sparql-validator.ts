@@ -27,10 +27,10 @@ async function prepareEngine(content: RDF.Quad[]): Promise<Engine> {
 }
 
 async function validateCatalog(reporter: ValidationReporter, engine: Engine) {
-  const ask = (query:string) => engine.queryBoolean(query);
-  const select = (query:string) => executeSelect(engine, query);
+  const ask = (query: string) => engine.queryBoolean(query);
+  const select = (query: string) => executeSelect(engine, query);
   for (const validator of v20210111.Catalog.SPARQL) {
-    await validator({ask, select, reporter});
+    await validator({ ask, select, reporter });
   }
 }
 
@@ -57,9 +57,9 @@ async function validateDatasets(
   engine: Engine,
   dataset: string
 ): Promise<undefined> {
-  const ask = (query:string) => engine.queryBoolean(query);
-  const select = (query:string) => executeSelect(engine, query);
+  const ask = (query: string) => engine.queryBoolean(query);
+  const select = (query: string) => executeSelect(engine, query);
   for (const validator of v20210111.Dataset.SPARQL) {
-    await validator({dataset, ask, select, reporter});
+    await validator({ dataset, ask, select, reporter });
   }
 }

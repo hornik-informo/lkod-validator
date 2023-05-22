@@ -1,4 +1,104 @@
 /**
+ * Listener to the process of validation. By default, ignores all
+ * operations.
+ */
+import { Quad } from "@rdfjs/types";
+
+export interface ValidationListener {
+  onValidationWillStart(): void;
+
+  /**
+   * Called when status message is changed.
+   */
+  onStatus(status: string, args: object | undefined): void;
+
+  /**
+   * Called when resource validation will start.
+   */
+  onResourceWillStart(resource: ResourceInValidation): void;
+
+  /**
+   * Report as what type the resource is validated.
+   */
+  onContentType(
+    resource: ResourceInValidation,
+    type: ResourceContentType
+  ): void;
+
+  /**
+   * Called when validator emits new message.
+   */
+  onMessage(resource: ResourceInValidation, message: Message): void;
+
+  /**
+   * Called then RDF content is ready.
+   */
+  onRdfContent(resource: ResourceInValidation, quads: Quad[]): void;
+
+  /**
+   * Called when resource validation  ended.
+   */
+  onResourceDidEnd(resource: ResourceInValidation): void;
+
+  onValidationDidEnd(): void;
+}
+
+export function createNoActionValidationListener(): ValidationListener {
+  return {
+    onValidationWillStart(): void {
+      // No action.
+    },
+    onStatus(status: string, args: object | undefined): void {
+      // No action.
+    },
+    onResourceWillStart(resource: ResourceInValidation): void {
+      // No action.
+    },
+    onContentType(
+      resource: ResourceInValidation,
+      type: ResourceContentType
+    ): void {
+      // No action.
+    },
+    onMessage(resource: ResourceInValidation, message: Message): void {
+      // No action.
+    },
+    onRdfContent(resource: ResourceInValidation, quads: Quad[]): void {
+      // No action.
+    },
+    onResourceDidEnd(resource: ResourceInValidation): void {
+      // No action.
+    },
+    onValidationDidEnd(): void {
+      // No action.
+    },
+  };
+}
+
+/**
+ * Represent a basic validation unit a message.
+ */
+export interface Message {
+  /**
+   * Identify specific message types.
+   */
+  readonly type?: number;
+
+  readonly created: Date;
+
+  readonly level: Level;
+
+  readonly validator: string;
+
+  /**
+   * Can use {{place-holder}} for values from args.
+   */
+  readonly message: string;
+
+  readonly args: object | undefined;
+}
+
+/**
  * Message levels.
  */
 export enum Level {
@@ -20,6 +120,25 @@ export enum Level {
   CRITICAL = 3,
 }
 
+/**
+ * Represent a resource for validation.
+ */
+export class ResourceInValidation {
+  /**
+   * Resource URL.
+   */
+  url: string;
+  /**
+   * Resource is validated as this type.
+   */
+  type: ResourceType;
+
+  constructor(url: string, type: ResourceType) {
+    this.url = url;
+    this.type = type;
+  }
+}
+
 export enum ResourceType {
   /**
    * URL to validate as provided by the user.
@@ -35,72 +154,10 @@ export enum ResourceType {
   DATASET = "DATASET",
 }
 
-/**
- * Represent a resource for validation.
- */
-export class ResourceInValidation {
-  url: string;
-
-  type: ResourceType;
-
-  constructor(url: string, type: ResourceType) {
-    this.url = url;
-    this.type = type;
-  }
-}
-
-/**
- * Represent a basic validation unit a message.
- */
-export interface Message {
-  readonly created: Date;
-
-  readonly level: Level;
-
-  readonly validator: string;
-
-  /**
-   * Can use {{place-holder}} for values from args.
-   */
-  readonly message: string;
-
-  readonly args: object | undefined;
-}
-
-/**
- * Listener to the process of validation. By default, ignores all
- * operations.
- */
-export interface ValidationListener {
-  onMessage(message: Message): void;
-
-  onStatus(status:string, args: object | undefined): void;
-
-  onResourceWillStart(resource: ResourceInValidation): void;
-
-  onResourceDidEnd(resource: ResourceInValidation): void;
-}
-
-/**
- * Implementation of observer that longs into a console.
- */
-class WriteToConsoleListener implements ValidationListener {
-
-  onMessage(message: Message) {
-    console.log("onMessage", message);
-  }
-
-  onStatus(status:string, args: object | undefined): void {
-    console.log("onStatus", status, args);
-  }
-
-  onResourceWillStart(resource: ResourceInValidation): void {
-    console.log("onResourceWillStart", resource);
-  }
-
-  onResourceDidEnd(resource: ResourceInValidation): void {
-    console.log("onResourceDidEnd", resource);
-  }
+export enum ResourceContentType {
+  SPARQL = "SPARQL",
+  JSONLD = "JSONLD",
+  TURTLE = "TURTLE",
 }
 
 /**
@@ -109,22 +166,46 @@ class WriteToConsoleListener implements ValidationListener {
  * to using {@link ValidationListener}.
  */
 export class ValidationReporter {
-  private readonly observer: ValidationListener;
+  private readonly observers: ValidationListener[];
 
   private resources: ResourceInValidation[] = [];
 
-  constructor(observer?: ValidationListener) {
-    this.observer = observer ?? new WriteToConsoleListener();
+  constructor(observers: ValidationListener[]) {
+    this.observers = [
+      //new WriteToConsoleListener(),
+      ...observers,
+    ];
   }
 
-  private emitMessage(level: Level, validator: string, message: string, args: object): void {
-    this.observer.onMessage({
+  validationBegin() {
+    this.observers.forEach(observer => observer.onValidationWillStart());
+  }
+
+  validationEnd() {
+    this.observers.forEach(observer => observer.onValidationDidEnd());
+  }
+
+  private emitMessage(
+    level: Level,
+    validator: string,
+    message: string,
+    args: object
+  ): void {
+    const messageObject: Message = {
       created: new Date(),
       level: level,
       validator: validator,
       message: message,
       args: args,
-    });
+    };
+    const resource = this.activeResource();
+    this.observers.forEach(observer =>
+      observer.onMessage(resource, messageObject)
+    );
+  }
+
+  private activeResource(): ResourceInValidation {
+    return this.resources[this.resources.length - 1];
   }
 
   info(validator: string, message: string, args: object = undefined): void {
@@ -145,9 +226,9 @@ export class ValidationReporter {
   critical(validator: string, message: string, args: object = undefined): void {
     this.emitMessage(Level.CRITICAL, validator, message, args);
   }
-  
+
   updateStatus(status: string, args: object | undefined = undefined) {
-    this.observer.onStatus(status, args);
+    this.observers.forEach(observer => observer.onStatus(status, args));
   }
 
   beginUrlValidation(url: string) {
@@ -155,7 +236,7 @@ export class ValidationReporter {
   }
 
   private openResource(resource: ResourceInValidation): void {
-    this.observer.onResourceWillStart(resource);
+    this.observers.forEach(observer => observer.onResourceWillStart(resource));
     this.resources.push(resource);
   }
 
@@ -169,7 +250,56 @@ export class ValidationReporter {
 
   endResourceValidation() {
     const resource = this.resources.pop();
-    this.observer.onResourceDidEnd(resource);
+    this.observers.forEach(observer => observer.onResourceDidEnd(resource));
   }
 
+  contentType(type: ResourceContentType) {
+    const resource = this.resources[this.resources.length - 1];
+    this.observers.forEach(observer => observer.onContentType(resource, type));
+  }
+
+  contentAsRdf(quads: Quad[]) {
+    const resource = this.resources[this.resources.length - 1];
+    this.observers.forEach(observer => observer.onRdfContent(resource, quads));
+  }
+}
+
+/**
+ * Implementation of observer that longs into a console.
+ */
+class WriteToConsoleListener implements ValidationListener {
+  onValidationWillStart() {
+    // No action.
+  }
+
+  onStatus(status: string, args: object | undefined): void {
+    console.log("   onStatus", status, args);
+  }
+
+  onResourceWillStart(resource: ResourceInValidation): void {
+    console.log("onResourceWillStart", resource);
+  }
+
+  onContentType(
+    resource: ResourceInValidation,
+    type: ResourceContentType
+  ): void {
+    console.log("   onContentType", type);
+  }
+
+  onMessage(resource: ResourceInValidation, message: Message): void {
+    console.log("   onMessage", message.validator, message.message);
+  }
+
+  onRdfContent(resource: ResourceInValidation, quads: Quad[]): void {
+    console.log("   onRdfContent", quads);
+  }
+
+  onResourceDidEnd(resource: ResourceInValidation): void {
+    console.log("onResourceDidEnd", resource);
+  }
+
+  onValidationDidEnd() {
+    // No action.
+  }
 }

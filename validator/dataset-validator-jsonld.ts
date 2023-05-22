@@ -14,7 +14,7 @@ export async function validateDatasetFromJsonld(
   try {
     responseData = await response.json();
   } catch (error) {
-    reporter.critical(GROUP, "json-ld.can-not-parse-json", {error});
+    reporter.critical(GROUP, "json-ld.can-not-parse-json", { error });
     return;
   }
   await validateDatasetWithJsonSchema(reporter, responseData);
@@ -22,9 +22,9 @@ export async function validateDatasetFromJsonld(
   try {
     quads = await jsonLdToRdf(responseData);
   } catch (error) {
-    reporter.critical(GROUP, "json-ld.can-not-parse-json-ld", {error});
+    reporter.critical(GROUP, "json-ld.can-not-parse-json-ld", { error });
     return;
   }
-  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
+  reporter.info(GROUP, "validator.quad-count", { count: quads.length });
   await validateDatasetFromQuads(reporter, quads, url);
 }

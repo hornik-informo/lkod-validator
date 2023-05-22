@@ -16,16 +16,15 @@ export async function validateCatalogFromSparql(
   reporter: ValidationReporter,
   url: string
 ): Promise<undefined> {
-  // TODO Add SPARQL extraction query to load all relevant quads.
   const query = createCatalogQuery();
   let quads;
   try {
     quads = await executeConstruct(url, query);
   } catch (error) {
-    reporter.critical(GROUP, "fetch-failed",{error});
+    reporter.critical(GROUP, "fetch-failed", { error });
     return;
   }
-  reporter.info(GROUP, "validator.quad-count", {count: quads.length});
+  reporter.info(GROUP, "validator.quad-count", { count: quads.length });
   // We use custom dataset validator, as we do not want to load
   // any additional data.
   const validateDataset = async (
@@ -37,7 +36,7 @@ export async function validateCatalogFromSparql(
     try {
       quads = await executeConstruct(url, query);
     } catch (error) {
-      reporter.error(GROUP, "fetch-failed",{error});
+      reporter.error(GROUP, "fetch-failed", { error });
       return;
     }
     // Validate as RDF.
@@ -49,6 +48,9 @@ export async function validateCatalogFromSparql(
   await validateCatalogFromQuads(reporter, validateDataset, quads, url, false);
 }
 
+/**
+ * Query all statements about catalog and publisher.
+ */
 function createCatalogQuery(): string {
   return `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
@@ -79,6 +81,9 @@ async function executeConstruct(url: string, query: string): Promise<object[]> {
   });
 }
 
+/**
+ * Query all statements about dataset.
+ */
 function createDatasetQuery(dataset: string): string {
   return `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>

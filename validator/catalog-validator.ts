@@ -1,10 +1,10 @@
-import {SparqlEndpointFetcher} from "fetch-sparql-endpoint";
+import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
 
-import {ValidationReporter} from "./validator-api";
-import {initiateResourceFetch, parseContentType} from "./url";
-import {validateCatalogFromJsonLd} from "./catalog-validator-jsonld";
-import {validateCatalogFromSparql} from "./catalog-validator-sparql";
-import {validateCatalogFromTurtle} from "./catalog-validator-turtle";
+import { ResourceContentType, ValidationReporter } from "./validator-api";
+import { initiateResourceFetch, parseContentType } from "./url";
+import { validateCatalogFromJsonLd } from "./catalog-validator-jsonld";
+import { validateCatalogFromSparql } from "./catalog-validator-sparql";
+import { validateCatalogFromTurtle } from "./catalog-validator-turtle";
 
 const GROUP = "catalog.group";
 
@@ -18,16 +18,19 @@ export async function validateCatalogFromUrl(
   reporter: ValidationReporter,
   url: string
 ): Promise<undefined> {
+  reporter.validationBegin();
   reporter.beginUrlValidation(url);
   reporter.updateStatus("catalog.validating-catalog");
   try {
     await validateUrlOrThrow(reporter, url);
   } catch (error) {
-    reporter.critical(GROUP, "catalog.unexpected-error", {error});
+    reporter.critical(GROUP, "catalog.unexpected-error", { error });
+    console.error(error);
   } finally {
     reporter.endResourceValidation();
   }
   reporter.updateStatus("catalog.validation-is-done");
+  reporter.validationEnd();
 }
 
 async function validateUrlOrThrow(
@@ -35,6 +38,7 @@ async function validateUrlOrThrow(
   url: string
 ): Promise<undefined> {
   if (await isSparqlEndpoint(url)) {
+    reporter.contentType(ResourceContentType.SPARQL);
     reporter.info(GROUP, "catalog.as-sparql");
     await validateCatalogFromSparql(reporter, url);
     return;
@@ -43,25 +47,33 @@ async function validateUrlOrThrow(
   if (response === null) {
     return;
   }
-  const contentTypeHeader = parseContentType(
+  const contentType = parseContentType(
     response.headers.get("content-type")
-  );
-  if (contentTypeHeader.type === "text/turtle") {
+  ).type;
+  if (contentType === "text/turtle") {
+    reporter.contentType(ResourceContentType.TURTLE);
     reporter.info(GROUP, "catalog.as-turtle");
     await validateCatalogFromTurtle(reporter, url, response);
-  } else if (contentTypeHeader.type === "application/ld+json") {
+  } else if (
+    contentType === "application/ld+json" ||
+    contentType === "application/json"
+  ) {
+    reporter.contentType(ResourceContentType.JSONLD);
     reporter.info(GROUP, "catalog.as-jsonld");
     await validateCatalogFromJsonLd(reporter, url, response);
   } else {
-    reporter.warning(GROUP, "catalog.unknown-content-type",
-      {type: contentTypeHeader.type});
+    reporter.warning(GROUP, "catalog.unknown-content-type", {
+      type: contentType,
+    });
     const extension = getExtension(url);
-    if (JSON_EXTENSION.includes(extension)) {
-      reporter.info(GROUP, "catalog.as-jsonld-by-extension");
-      await validateCatalogFromJsonLd(reporter, url, response);
-    } else if (TURTLE_EXTENSION.includes(extension)) {
+    if (TURTLE_EXTENSION.includes(extension)) {
+      reporter.contentType(ResourceContentType.TURTLE);
       reporter.info(GROUP, "catalog.as-turtle-by-extension");
       await validateCatalogFromTurtle(reporter, url, response);
+    } else if (JSON_EXTENSION.includes(extension)) {
+      reporter.contentType(ResourceContentType.JSONLD);
+      reporter.info(GROUP, "catalog.as-jsonld-by-extension");
+      await validateCatalogFromJsonLd(reporter, url, response);
     } else {
       reporter.critical(GROUP, "catalog.can-not-determine-type");
     }
@@ -70,7 +82,6 @@ async function validateUrlOrThrow(
 
 /**
  * Test SPARQL endpoint by executing simple ASK query
- * @param url
  */
 async function isSparqlEndpoint(url: string): Promise<boolean> {
   try {
