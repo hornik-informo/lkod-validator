@@ -31,16 +31,3 @@ export async function initiateResourceFetch(
     return response;
   }
 }
-
-export function parseContentType(contentTypeHeader: string): ContentTypeHeader {
-  const tokens = contentTypeHeader.split(";").map(item => item.trim());
-  const parameters = {};
-  for (let index = 1; index < tokens.length; ++index) {
-    const [key, value] = tokens[index].split("=", 2);
-    parameters[key.trim()] = value.trim();
-  }
-  return {
-    type: tokens[0],
-    parameters: parameters,
-  };
-}

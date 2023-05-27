@@ -1,16 +1,16 @@
 import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
 
 import { ResourceContentType, ValidationReporter } from "./validator-api";
-import { initiateResourceFetch, parseContentType } from "./url";
+import { initiateResourceFetch } from "./url";
 import { validateCatalogFromJsonLd } from "./catalog-validator-jsonld";
 import { validateCatalogFromSparql } from "./catalog-validator-sparql";
 import { validateCatalogFromTurtle } from "./catalog-validator-turtle";
+import {
+  detectContentType,
+  detectContentTypeFromUrl,
+} from "./url/content-type";
 
 const GROUP = "catalog.group";
-
-const JSON_EXTENSION = ["json", "jsonld"];
-
-const TURTLE_EXTENSION = ["ttl"];
 
 const fetcher = new SparqlEndpointFetcher();
 
@@ -39,7 +39,7 @@ async function validateUrlOrThrow(
 ): Promise<undefined> {
   if (await isSparqlEndpoint(url)) {
     reporter.contentType(ResourceContentType.SPARQL);
-    reporter.info(GROUP, "catalog.as-sparql");
+    reporter.info(GROUP, "validator.as-sparql");
     await validateCatalogFromSparql(reporter, url);
     return;
   }
@@ -47,36 +47,23 @@ async function validateUrlOrThrow(
   if (response === null) {
     return;
   }
-  const contentType = parseContentType(
-    response.headers.get("content-type")
-  ).type;
-  if (contentType === "text/turtle") {
-    reporter.contentType(ResourceContentType.TURTLE);
-    reporter.info(GROUP, "catalog.as-turtle");
-    await validateCatalogFromTurtle(reporter, url, response);
-  } else if (
-    contentType === "application/ld+json" ||
-    contentType === "application/json"
-  ) {
-    reporter.contentType(ResourceContentType.JSONLD);
-    reporter.info(GROUP, "catalog.as-jsonld");
-    await validateCatalogFromJsonLd(reporter, url, response);
-  } else {
-    reporter.warning(GROUP, "catalog.unknown-content-type", {
-      type: contentType,
-    });
-    const extension = getExtension(url);
-    if (TURTLE_EXTENSION.includes(extension)) {
-      reporter.contentType(ResourceContentType.TURTLE);
-      reporter.info(GROUP, "catalog.as-turtle-by-extension");
-      await validateCatalogFromTurtle(reporter, url, response);
-    } else if (JSON_EXTENSION.includes(extension)) {
-      reporter.contentType(ResourceContentType.JSONLD);
-      reporter.info(GROUP, "catalog.as-jsonld-by-extension");
-      await validateCatalogFromJsonLd(reporter, url, response);
-    } else {
-      reporter.critical(GROUP, "catalog.can-not-determine-type");
+  const contentTypeHeader = response.headers.get("content-type");
+  let { contentType, type } = detectContentType(contentTypeHeader);
+  if (type === null) {
+    reporter.warning(GROUP, "validator.unknown-content-type", { contentType });
+    type = detectContentTypeFromUrl(url);
+    if (type === null) {
+      reporter.critical(GROUP, "validator.unknown-extension");
+      return;
     }
+  }
+  reporter.contentType(type);
+  if (ResourceContentType.TURTLE === type) {
+    reporter.info(GROUP, "validator.as-turtle");
+    await validateCatalogFromTurtle(reporter, url, response);
+  } else if (ResourceContentType.JSONLD === type) {
+    reporter.info(GROUP, "validator.as-jsonld");
+    await validateCatalogFromJsonLd(reporter, url, response);
   }
 }
 
@@ -90,8 +77,4 @@ async function isSparqlEndpoint(url: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-function getExtension(url: string): string {
-  return url.substr(url.lastIndexOf(".") + 1).toLowerCase();
 }
