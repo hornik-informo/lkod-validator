@@ -60,30 +60,18 @@ function renderContent(
     );
   }
 
-  if (showDetails) {
-    return (
-      <>
-        <Summary
-          catalog={summaryService.state.catalog}
-          datasets={summaryService.state.datasets}
-          entrypoint={summaryService.state.entrypoint}
-        />
-        <MessageList groups={messageService.state.groups}/>
-      </>
-    );
-  } else {
-    return (
-      <>
-        <Summary
-          catalog={summaryService.state.catalog}
-          datasets={summaryService.state.datasets}
-          entrypoint={summaryService.state.entrypoint}
-        />
-        <br/>
-        <Button variant="outlined" onClick={() => setShowDetails(true)}>
-          {t("home-view.show-details")}
-        </Button>
-      </>
-    );
-  }
+  return (
+    <>
+      <Summary
+        catalog={summaryService.state.catalog}
+        datasets={summaryService.state.datasets}
+        entrypoint={summaryService.state.entrypoint}
+      />
+      <br/>
+      <Button variant="outlined" onClick={() => setShowDetails(!showDetails)}>
+        {t(showDetails ? "home-view.hide-details" : "home-view.show-details")}
+      </Button>
+      { showDetails && <MessageList groups={messageService.state.groups}/> }
+    </>
+  );
 }
