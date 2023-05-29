@@ -15,8 +15,8 @@ export const StatusBar = ({
   const { t } = useTranslation();
   return (
     <Box sx={{ my: 2 }}>
-      {message.length === 0 ? <br /> : t(message, args)}
       <LoaderIndicator show={working} />
+      {message.length === 0 ? <br /> : t(message, args)}
     </Box>
   );
 };
