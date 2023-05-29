@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import LinkIcon from "@mui/icons-material/Link";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import FolderIcon from "@mui/icons-material/Folder";
 import TopicIcon from "@mui/icons-material/Topic";
 import ListItem from "@mui/material/ListItem";
@@ -10,6 +11,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import Collapse from "@mui/material/Collapse";
 import List from "@mui/material/List";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import Box from "@mui/material/Box";
 
 import { Level, ResourceType } from "../../validator";
 import { MessageGroup } from "./message-service";
@@ -46,9 +48,14 @@ export function MessageListGroup({
           primary={t(GROUP_TO_LABEL[resource.type])}
           secondary={resource.url}
         />
-        <div onClick={() => setOpen(!open)}>
+        <Box sx={{ mr: "1rem"}}>
+          <a href={resource.url} target="_blank" rel="noopener noreferrer">
+            <OpenInNewIcon/>
+          </a>
+        </Box>
+        <Box onClick={() => setOpen(!open)}>
           {open ? <ExpandLess /> : <ExpandMore />}
-        </div>
+        </Box>
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
