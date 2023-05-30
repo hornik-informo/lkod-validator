@@ -4,7 +4,7 @@ export const useInputAreaController = (
   onStartValidation: (url: string) => void
 ) => {
   const [url, setUrl] = useState(
-    "https://dev.nkod.opendata.cz/api/v2/vdf/dataset?iri=https://data.gov.cz/zdroj/datové-sady/00007064/cd9a963ddff984087857cc891a790784"
+    "https://data.mvcr.gov.cz/sparql"
   );
 
   const onChangeUrl = useMemo(
