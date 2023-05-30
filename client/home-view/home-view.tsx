@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, Trans } from "react-i18next";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 
@@ -22,6 +22,14 @@ export function HomeView() {
   return (
     <>
       <h1>{t("home-view.title")}</h1>
+      <Box sx={{mb: "2rem"}}>
+        <Trans i18nKey="home-view.introduction">
+          Dummy text node here to make i18n work ...
+          <a href="https://ofn.gov.cz/rozhraní-katalogů-otevřených-dat/2021-01-11/" target="_blank" rel="noopener noreferrer">OFN</a>
+          <a href="https://data.gov.cz/lokální-katalogy" target="_blank" rel="noopener noreferrer">Local Data Catalogs</a>
+          <a href="https://opendata.gov.cz/špatná-praxe:chybějící-cors" target="_blank" rel="noopener noreferrer">CORS</a>
+        </Trans>
+      </Box>
       <InputArea
         disabled={state.working}
         onStartValidation={onBeginValidation}
