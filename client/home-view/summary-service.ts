@@ -78,10 +78,6 @@ export interface CatalogSummary {
    * Highest message level for the catalog.
    */
   level?: Level;
-  /**
-   * Set to true when object is found and loaded from RDF.
-   */
-  contentLoaded: boolean;
 }
 
 export interface DatasetSummary {
@@ -132,7 +128,6 @@ function createInitialState(): State {
       urls: [],
       titles: [],
       messages: [],
-      contentLoaded: false,
     },
     datasets: [],
   };

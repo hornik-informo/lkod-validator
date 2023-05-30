@@ -17,10 +17,7 @@ export function MessageListItem({ message }: { message: Message }) {
   return (
     <ListItem sx={{ pl: 4 }}>
       <MessageIcon level={message.level} />
-      <ListItemText
-        primary={t(message.message, message.args)}
-        secondary={t(message.validator)}
-      />
+      <ListItemText primary={t(message.message, message.args)} />
     </ListItem>
   );
 }

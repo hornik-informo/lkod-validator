@@ -1,121 +1,148 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
+import List from "@mui/material/List";
+import Box from "@mui/material/Box";
 
 import {
   CatalogSummary,
   DatasetSummary,
   EntrypointSummary,
 } from "./summary-service";
-import { Level } from "../../validator";
+import { Level, Message } from "../../validator";
 import { MessageListItem } from "./message-list-item";
-import List from "@mui/material/List";
-import React from "react";
 
 export const Summary = ({
+  entrypoint,
   catalog,
   datasets,
-  entrypoint,
+  completed,
 }: {
+  entrypoint: EntrypointSummary;
   catalog: CatalogSummary;
   datasets: DatasetSummary[];
-  entrypoint: EntrypointSummary;
+  completed: boolean;
 }) => {
-  if (entrypoint.level === Level.CRITICAL && datasets.length === 0) {
-    // There is no need to render anything.
-    return <EntrypointCritical entrypoint={entrypoint} />;
+  const failToLoadEntrypoint =
+    entrypoint.level === Level.CRITICAL && datasets.length === 0 && completed;
+  if (failToLoadEntrypoint) {
+    return (
+      <>
+        <EntrypointWithFailedLoad entrypoint={entrypoint} />
+      </>
+    );
   }
-  //
-  let entrypointContent;
-  if (entrypoint.level >= Level.ERROR) {
-    entrypointContent = <EntrypointError entrypoint={entrypoint} />;
-  } else {
-    entrypointContent = <EntrypointSection entrypoint={entrypoint} />;
-  }
-  //
-  let catalogContent = <CatalogSection catalog={catalog} />;
-  //
-  let datasetsContent = null;
-  if (datasets.length > 0) {
-    datasetsContent = <DatasetsSection datasets={datasets} />;
-  }
+
   return (
     <>
-      {entrypointContent}
-      <br />
-      {catalogContent}
-      <br />
-      {datasetsContent}
+      <CatalogSection entrypoint={entrypoint} catalog={catalog} />
+      <DatasetsSection datasets={datasets} />
     </>
   );
 };
 
+function EntrypointWithFailedLoad({
+  entrypoint,
+}: {
+  entrypoint: EntrypointSummary;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Box sx={{ my: "1rem" }}>
+      <dl>
+        <DefinitionList
+          title={t("summary.content-type")}
+          values={entrypoint.contentType}
+        />
+      </dl>
+      <WarningMessageList messages={entrypoint.messages} />
+      <br />
+      {t("summary.validation-failed-critical")}
+    </Box>
+  );
+}
+
 /**
- * Rendered when there is a critical level message and no catalog or dataset.
- * This happens when we fail to detect or load the content.
+ * Render definition list with given title.
  */
-function EntrypointCritical({ entrypoint }: { entrypoint: EntrypointSummary }) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <div>Nepodařilo se stáhnout vstupní bod.</div>
-      <List component="div" disablePadding>
-        {entrypoint.messages
-          .filter(item => item.level >= Level.WARNING)
-          .map((message, index) => (
-            <MessageListItem key={index} message={message} />
-          ))}
-      </List>
-    </>
-  );
-}
-
-function EntrypointError({ entrypoint }: { entrypoint: EntrypointSummary }) {
-  const { t } = useTranslation();
-  return (
-    <>
-      <div>
-        Povedlo se načíst vstupní bod jako {entrypoint.contentType}, ale při
-        jeho zpracování došlo k chybě.
-      </div>
-      <List component="div" disablePadding>
-        {entrypoint.messages
-          .filter(item => item.level >= Level.WARNING)
-          .map((message, index) => (
-            <MessageListItem key={index} message={message} />
-          ))}
-      </List>
-    </>
-  );
-}
-
-function EntrypointSection({ entrypoint }: { entrypoint: EntrypointSummary }) {
-  const { t } = useTranslation();
-  return <div>Povedlo se načíst obsah jako: {entrypoint.contentType}.</div>;
-}
-
-function CatalogSection({ catalog }: { catalog: CatalogSummary }) {
-  const { t } = useTranslation();
-  if (!catalog.contentLoaded) {
-    return <>Nepodařilo se načíst záznam katalogu.</>;
+function DefinitionList({
+  title,
+  values,
+}: {
+  title: string;
+  values: any | any[];
+}) {
+  if (values === null || values === undefined) {
+    return null;
+  }
+  if (!Array.isArray(values)) {
+    values = [values];
+  }
+  if (values.length === 0) {
+    return null;
   }
   return (
-    <div>
-      Očekávané URL: '{catalog.expectedUrl}
-      <br />
-      Nalezené URL: '{catalog.urls}'<br />
-      Název: '{catalog.titles}'<br />
-      <List component="div" disablePadding>
-        {catalog.messages
-          .filter(item => item.level >= Level.WARNING)
-          .map((message, index) => (
-            <MessageListItem key={index} message={message} />
-          ))}
-      </List>
-    </div>
+    <>
+      <dt>{title}</dt>
+      {values.map(item => (
+        <dd key={item}> {item} </dd>
+      ))}
+    </>
+  );
+}
+
+/**
+ * List of messages with level at leas warning.
+ */
+function WarningMessageList({ messages }: { messages: Message[] }) {
+  if (messages.length === 0) {
+    return null;
+  }
+  return (
+    <List component="div" disablePadding>
+      {messages
+        .filter(item => item.level >= Level.WARNING)
+        .map((message, index) => (
+          <MessageListItem key={index} message={message} />
+        ))}
+    </List>
+  );
+}
+
+function CatalogSection({
+  entrypoint,
+  catalog,
+}: {
+  entrypoint: EntrypointSummary;
+  catalog: CatalogSummary;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Box sx={{ my: "1rem" }}>
+      <dl>
+        <DefinitionList
+          title={t("summary.content-type")}
+          values={entrypoint.contentType}
+        />
+        <DefinitionList
+          title={t("summary.catalog-url")}
+          values={catalog.urls}
+        />
+        <DefinitionList
+          title={t("summary.catalog-title")}
+          values={catalog.titles}
+        />
+      </dl>
+      <WarningMessageList messages={entrypoint.messages} />
+      <WarningMessageList messages={catalog.messages} />
+    </Box>
   );
 }
 
 function DatasetsSection({ datasets }: { datasets: DatasetSummary[] }) {
   const { t } = useTranslation();
+  if (datasets.length === 0) {
+    return null;
+  }
   let validDatasets = [];
   let datasetsWithWarning = [];
   let datasetsWithError = [];
@@ -129,10 +156,15 @@ function DatasetsSection({ datasets }: { datasets: DatasetSummary[] }) {
     }
   }
   return (
-    <div>
-      Nalezeno {datasets.length} datových sad.
-      <br />Z toho má {datasetsWithWarning.length} s varováním a{" "}
-      {datasetsWithError.length} s chybou.
-    </div>
+    <>
+      <dl>
+        <dt>{t("summary.datasets-count")}</dt>
+        <dd> {datasets.length}</dd>
+        <dt>{t("summary.datasets-with-warning-without-error")}</dt>
+        <dd>{datasetsWithWarning.length}</dd>
+        <dt>{t("summary.datasets-with-error")}</dt>
+        <dd>{datasetsWithError.length}</dd>
+      </dl>
+    </>
   );
 }

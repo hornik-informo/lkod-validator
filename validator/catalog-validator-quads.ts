@@ -60,11 +60,15 @@ function validateCatalogUrl(
 ) {
   if (catalogs.length === 0) {
     reporter.critical(GROUP, "quads.missing-catalog");
-  } else if (catalogs.length > 1) {
+    return;
+  }
+  console.log("validateCatalogUrl", catalogs, catalogs.length);
+  if (catalogs.length > 1) {
     reporter.error(GROUP, "quads.multiple-catalogs", {
       count: catalogs.length,
     });
-  } else if (catalogs[0] !== expectedCatalogUrl) {
+  }
+  if (catalogs[0] !== expectedCatalogUrl) {
     reporter.error(GROUP, "quads.unexpected-catalog", {
       expected: expectedCatalogUrl,
       actual: catalogs[0],
@@ -80,7 +84,7 @@ async function validateDatasets(
   quads: RDF.Quad[]
 ): Promise<undefined> {
   const datasets = selectDatasets(quads);
-  reporter.info(GROUP, "quads.catalog-count", { count: datasets.length });
+  reporter.info(GROUP, "quads.dataset-count", { count: datasets.length });
   let counter = 1;
   for (const dataset of datasets) {
     reporter.updateStatus("quads.status-validating-datasets", {

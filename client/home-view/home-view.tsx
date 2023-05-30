@@ -1,25 +1,21 @@
-import React, {useState, useMemo} from "react";
-import {useTranslation} from "react-i18next";
-import Switch from "@mui/material/Switch";
-import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Box from "@mui/material/Box";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 
-
-import {useValidatorService} from "./validator-service";
-import {InputArea} from "./input-area";
-import {StatusBar} from "./status-bar";
-import {MessageList} from "./message-list";
-import {useMessageService} from "./message-service";
-import {useSummaryService} from "./summary-service";
-import {Summary} from "./summary";
+import { useValidatorService } from "./validator-service";
+import { InputArea } from "./input-area";
+import { StatusBar } from "./status-bar";
+import { MessageList } from "./message-list";
+import { useMessageService } from "./message-service";
+import { useSummaryService } from "./summary-service";
+import { Summary } from "./summary";
 
 export function HomeView() {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const messageService = useMessageService();
   const summaryService = useSummaryService();
-  const {state, onBeginValidation} = useValidatorService([
+  const { state, onBeginValidation } = useValidatorService([
     messageService.listener,
     summaryService.listener,
   ]);
@@ -36,7 +32,8 @@ export function HomeView() {
         args={state.statusArgs}
       />
       {renderContent(
-        state.working || state.completed,
+        state.working,
+        state.completed,
         summaryService,
         messageService
       )}
@@ -45,33 +42,34 @@ export function HomeView() {
 }
 
 function renderContent(
-  ready: boolean,
+  working: boolean,
+  completed: boolean,
   summaryService,
   messageService
 ) {
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [showDetails, setShowDetails] = useState(false);
-  if (!ready) {
+  if (!working && !completed) {
     return (
-      <Box display="flex" sx={{justifyContent: "center"}}>
-        <br/>
-        Výsledky se zde zobrazí po spuštění validace.
+      <Box display="flex" sx={{ justifyContent: "center" }}>
+        {t("home-view.waiting-for-validation-to-start")}
       </Box>
     );
   }
-
   return (
-    <>
-      <Summary
-        catalog={summaryService.state.catalog}
-        datasets={summaryService.state.datasets}
-        entrypoint={summaryService.state.entrypoint}
-      />
-      <br/>
+    <Box>
+      <Box sx={{ mb: "2rem" }}>
+        <Summary
+          catalog={summaryService.state.catalog}
+          datasets={summaryService.state.datasets}
+          entrypoint={summaryService.state.entrypoint}
+          completed={completed}
+        />
+      </Box>
       <Button variant="outlined" onClick={() => setShowDetails(!showDetails)}>
         {t(showDetails ? "home-view.hide-details" : "home-view.show-details")}
       </Button>
-      { showDetails && <MessageList groups={messageService.state.groups}/> }
-    </>
+      {showDetails && <MessageList groups={messageService.state.groups} />}
+    </Box>
   );
 }

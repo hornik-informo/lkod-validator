@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import LinkIcon from "@mui/icons-material/Link";
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import FolderIcon from "@mui/icons-material/Folder";
 import TopicIcon from "@mui/icons-material/Topic";
 import ListItem from "@mui/material/ListItem";
@@ -48,9 +48,9 @@ export function MessageListGroup({
           primary={t(GROUP_TO_LABEL[resource.type])}
           secondary={resource.url}
         />
-        <Box sx={{ mr: "1rem"}}>
+        <Box sx={{ mr: "1rem" }}>
           <a href={resource.url} target="_blank" rel="noopener noreferrer">
-            <OpenInNewIcon/>
+            <OpenInNewIcon />
           </a>
         </Box>
         <Box onClick={() => setOpen(!open)}>

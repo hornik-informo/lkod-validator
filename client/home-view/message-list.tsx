@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import List from "@mui/material/List";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import NativeSelect from "@mui/material/NativeSelect";
-import Pagination from '@mui/material/Pagination';
+import Pagination from "@mui/material/Pagination";
 
 import { MessageGroup } from "./message-service";
 import { MessageListGroup } from "./message-list-group";
@@ -14,12 +14,15 @@ const PAGE_SIZE = 12;
 
 export const MessageList = ({ groups }: { groups: MessageGroup[] }) => {
   const { t } = useTranslation();
-  const [filter, setFilter] = useState(Level.INFO);
+  const [filter, setFilter] = useState(Level.WARNING);
   const [page, setPage] = useState(1);
   const onChangePage = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
   };
-  const [state, setState] = useState<{pageCount:number, items: JSX.Element[]}>({"pageCount": 1, "items": []});
+  const [state, setState] = useState<{
+    pageCount: number;
+    items: JSX.Element[];
+  }>({ pageCount: 1, items: [] });
   useEffect(() => {
     const filteredItems = groups
       .filter(item => item.level >= filter)
@@ -31,15 +34,20 @@ export const MessageList = ({ groups }: { groups: MessageGroup[] }) => {
         />
       ));
     setState({
-      "pageCount": Math.ceil(filteredItems.length / PAGE_SIZE),
-      "items": filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+      pageCount: Math.ceil(filteredItems.length / PAGE_SIZE),
+      items: filteredItems.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
     });
-  }, [groups, filter, page, setState])
+  }, [groups, filter, page, setState]);
   return (
     <>
       <Filter value={filter} onUpdateValue={setFilter} />
       <List>{selectContent(t, groups, state.items)}</List>
-      <Pagination count={state.pageCount} variant="outlined" page={page} onChange={onChangePage} />
+      <Pagination
+        count={state.pageCount}
+        variant="outlined"
+        page={page}
+        onChange={onChangePage}
+      />
     </>
   );
 };
