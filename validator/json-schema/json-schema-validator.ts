@@ -41,12 +41,14 @@ function sanitizePattern(value: string): string {
 export async function validateCatalogWithJsonSchema(
   reporter: ValidationReporter,
   content: any
-) {
+): Promise<boolean> {
   const report = await validate(CATALOG_SCHEMA_ID, content, BASIC);
   if (report.valid) {
     reporter.info(GROUP, "json-schema.valid");
+    return true;
   } else {
     reporter.error(GROUP, "json-schema.invalid");
+    return false;
   }
 }
 

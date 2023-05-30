@@ -20,7 +20,10 @@ export async function validateCatalogFromJsonLd(
     return;
   }
   // Validate using JSON Schema.
-  await validateCatalogWithJsonSchema(reporter, responseData);
+  const isValid = await validateCatalogWithJsonSchema(reporter, responseData);
+  if (!isValid && canBeCkanApi(url, responseData)) {
+    reporter.error(GROUP, "json-ld.look-like-ckan");
+  }
   // Convert to RDF.
   let quads;
   try {
@@ -32,4 +35,10 @@ export async function validateCatalogFromJsonLd(
   reporter.info(GROUP, "validator.quad-count", { count: quads.length });
   // Validate as RDF.
   await validateCatalogFromQuads(reporter, validateDatasetFromUrl, quads, url);
+}
+
+function canBeCkanApi(url: string, content:any) {
+  const urlLooksLikeCkan = url.endsWith("/action/package_list");
+  const contentLooksLikeCkan = content["success"] !== undefined && content["result"] !== undefined;
+  return urlLooksLikeCkan && contentLooksLikeCkan;
 }
