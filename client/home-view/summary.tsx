@@ -51,7 +51,7 @@ function EntrypointWithFailedLoad({
       <dl>
         <DefinitionList
           title={t("summary.content-type")}
-          values={entrypoint.contentType}
+          values={formatContentType(t, entrypoint.contentType)}
         />
       </dl>
       <WarningMessageList messages={entrypoint.messages} />
@@ -91,6 +91,13 @@ function DefinitionList({
 }
 
 /**
+ * Format content type to be displayed to user.
+ */
+function formatContentType(t, contentType: undefined | string) {
+  return contentType === undefined ? undefined : t("summary.content-type-" + contentType);
+}
+
+/**
  * List of messages with level at leas warning.
  */
 function WarningMessageList({ messages }: { messages: Message[] }) {
@@ -121,7 +128,7 @@ function CatalogSection({
       <dl>
         <DefinitionList
           title={t("summary.content-type")}
-          values={entrypoint.contentType}
+          values={formatContentType(t, entrypoint.contentType)}
         />
         <DefinitionList
           title={t("summary.catalog-url")}
