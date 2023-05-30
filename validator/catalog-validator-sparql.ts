@@ -58,16 +58,9 @@ PREFIX dcterms: <http://purl.org/dc/terms/>
 
 CONSTRUCT { 
   ?catalog ?catalogPredicate ?catalogObject .
-  ?publisher ?publisherPredicate ?publisherObject .
 } WHERE {
   ?catalog a dcat:Catalog ;
     ?catalogPredicate ?catalogObject .
-    
-  OPTIONAL {
-    ?catalog dcterms:publisher ?publisher .
-    ?publisher ?publisherPredicate ?publisherObject .
-  }
-
 }`;
 }
 
