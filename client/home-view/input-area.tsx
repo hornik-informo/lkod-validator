@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useInputAreaController } from "./input-area-controller";
+import {useUrlQuery} from "../application/url-query";
 
 export const InputArea = ({
   onStartValidation,
@@ -12,8 +13,9 @@ export const InputArea = ({
   disabled: boolean;
 }) => {
   const { t } = useTranslation();
+  const urlQuery = useUrlQuery();
   const { url, onChangeUrl, onSubmit } =
-    useInputAreaController(onStartValidation);
+    useInputAreaController(urlQuery.catalog, onStartValidation);
   return (
     <div>
       <TextField
@@ -26,7 +28,7 @@ export const InputArea = ({
         fullWidth
       />
       <br /> <br />
-      <Button variant="outlined" onClick={onSubmit} disabled={disabled}>
+      <Button variant="outlined" onClick={onSubmit} disabled={disabled || url === ""}>
         {t("home-view.submit")}
       </Button>
     </div>

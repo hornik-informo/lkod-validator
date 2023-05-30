@@ -19,7 +19,6 @@ i18n
     fallbackLng: "cs",
     supportedLngs: [
       "cs",
-      // "en",
     ],
     debug: process.env.NODE_ENV === "development",
     interpolation: {
@@ -44,7 +43,6 @@ export function Application() {
       }),
     [prefersDarkMode]
   );
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
