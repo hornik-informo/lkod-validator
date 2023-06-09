@@ -37,8 +37,9 @@ export async function validateCatalogFromJsonLd(
   await validateCatalogFromQuads(reporter, validateDatasetFromUrl, quads, url);
 }
 
-function canBeCkanApi(url: string, content:any) {
+function canBeCkanApi(url: string, content: any) {
   const urlLooksLikeCkan = url.endsWith("/action/package_list");
-  const contentLooksLikeCkan = content["success"] !== undefined && content["result"] !== undefined;
+  const contentLooksLikeCkan =
+    content["success"] !== undefined && content["result"] !== undefined;
   return urlLooksLikeCkan && contentLooksLikeCkan;
 }

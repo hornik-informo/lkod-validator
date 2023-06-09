@@ -7,12 +7,24 @@ import { Engine } from "quadstore-comunica";
 import { ValidationReporter } from "../validator-api";
 import { v20210111 } from "../../specification/rozhraní-katalogů-otevřených-dat/";
 
+export interface SparqlWrap {
+  ask: (query: string) => Promise<Boolean>;
+  select: (query: string) => Promise<object[]>;
+}
+
 export async function validateCatalogWithSparql(
   reporter: ValidationReporter,
   content: RDF.Quad[]
 ): Promise<void> {
+  const sparqlWrap = await wrapWithSparql(content);
+  await validateCatalog(reporter, sparqlWrap);
+}
+
+export async function wrapWithSparql(content: RDF.Quad[]): Promise<SparqlWrap> {
   const engine = await prepareEngine(content);
-  await validateCatalog(reporter, engine);
+  const ask = (query: string) => engine.queryBoolean(query);
+  const select = (query: string) => executeSelect(engine, query);
+  return { ask, select };
 }
 
 async function prepareEngine(content: RDF.Quad[]): Promise<Engine> {
@@ -26,14 +38,6 @@ async function prepareEngine(content: RDF.Quad[]): Promise<Engine> {
   return engine;
 }
 
-async function validateCatalog(reporter: ValidationReporter, engine: Engine) {
-  const ask = (query: string) => engine.queryBoolean(query);
-  const select = (query: string) => executeSelect(engine, query);
-  for (const validator of v20210111.Catalog.SPARQL) {
-    await validator({ ask, select, reporter });
-  }
-}
-
 async function executeSelect(engine: Engine, query: string): Promise<object[]> {
   const stream = await engine.queryBindings(query);
   return new Promise((accept, reject) => {
@@ -43,23 +47,30 @@ async function executeSelect(engine: Engine, query: string): Promise<object[]> {
     stream.on("error", error => reject(error));
   });
 }
-export async function validateDatasetWithSparql(
-  reporter: ValidationReporter,
-  content: RDF.Quad[],
-  dataset: string
-): Promise<void> {
-  const engine = await prepareEngine(content);
-  await validateDatasets(reporter, engine, dataset);
+
+async function validateCatalog(reporter: ValidationReporter, wrap: SparqlWrap) {
+  for (const validator of v20210111.Catalog.SPARQL) {
+    await validator({ ...wrap, reporter });
+  }
 }
 
-async function validateDatasets(
+export async function validateDatasetWithSparql(
   reporter: ValidationReporter,
-  engine: Engine,
+  sparqlWrap: SparqlWrap,
   dataset: string
-): Promise<undefined> {
-  const ask = (query: string) => engine.queryBoolean(query);
-  const select = (query: string) => executeSelect(engine, query);
+): Promise<void> {
   for (const validator of v20210111.Dataset.SPARQL) {
-    await validator({ dataset, ask, select, reporter });
+    await validator({ ...sparqlWrap, dataset, reporter });
+  }
+}
+
+export async function validateDistributionWithSparql(
+  reporter: ValidationReporter,
+  sparqlWrap: SparqlWrap,
+  dataset: string,
+  distribution: string
+): Promise<void> {
+  for (const validator of v20210111.Distributions.SPARQL) {
+    await validator({ ...sparqlWrap, dataset, distribution, reporter });
   }
 }

@@ -1,12 +1,10 @@
-import {useState, useMemo, ChangeEvent, useEffect} from "react";
+import { useState, useMemo, ChangeEvent, useEffect } from "react";
 
 export const useInputAreaController = (
   defaultValue: null | string,
   onStartValidation: (url: string) => void
 ) => {
-  const [url, setUrl] = useState(
-    defaultValue ?? ""
-  );
+  const [url, setUrl] = useState(defaultValue ?? "");
 
   useEffect(() => {
     if (defaultValue === null) {

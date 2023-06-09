@@ -94,7 +94,9 @@ function DefinitionList({
  * Format content type to be displayed to user.
  */
 function formatContentType(t, contentType: undefined | string) {
-  return contentType === undefined ? undefined : t("summary.content-type-" + contentType);
+  return contentType === undefined
+    ? undefined
+    : t("summary.content-type-" + contentType);
 }
 
 /**

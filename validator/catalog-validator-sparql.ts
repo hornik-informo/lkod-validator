@@ -54,7 +54,6 @@ export async function validateCatalogFromSparql(
 function createCatalogQuery(): string {
   return `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
 
 CONSTRUCT { 
   ?catalog ?catalogPredicate ?catalogObject .
@@ -80,11 +79,31 @@ async function executeConstruct(url: string, query: string): Promise<object[]> {
 function createDatasetQuery(dataset: string): string {
   return `
 PREFIX dcat: <http://www.w3.org/ns/dcat#>
-PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX pu: <https://data.gov.cz/slovník/podmínky-užití/>
 
 CONSTRUCT { 
   <${dataset}> ?p ?o .
+  ?distributionS ?distributionP ?distributionO .
+  ?podmínkyS ?podmínkyP ?podmínkyO .
+  ?serviceS ?serviceP ?serviceO .
 } WHERE {
-  <${dataset}> ?p ?o.  
+  <${dataset}> ?p ?o .
+  
+  OPTIONAL {
+    <${dataset}> dcat:distribution ?distributionS .
+    ?distributionS ?distributionP ?distributionO .
+  }
+
+  OPTIONAL {
+    <${dataset}> dcat:distribution ?distributionS .
+    ?distributionS pu:specifikace ?podmínkyS .
+    ?podmínkyS ?podmínkyP ?podmínkyO .
+  }
+
+  OPTIONAL {
+    <${dataset}> dcat:distribution ?distributionS .
+    ?distributionS dcat:accessService ?serviceS .
+    ?serviceS ?serviceP ?serviceO .
+  }
 }`;
 }

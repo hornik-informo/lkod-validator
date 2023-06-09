@@ -16,6 +16,10 @@ import Dataset06Sparql from "./2021-01-11/dataset-06.sparql";
 import Dataset07Sparql from "./2021-01-11/dataset-07.sparql";
 import Dataset08Sparql from "./2021-01-11/dataset-08.sparql";
 import Dataset09Sparql from "./2021-01-11/dataset-09.sparql";
+import Distribution01Sparql from "./2021-01-11/distribution-01.sparql";
+import Distribution02Sparql from "./2021-01-11/distribution-02.sparql";
+import FileDistribution from "./2021-01-11/file.sparql";
+import DataServiceDistribution from "./2021-01-11/data-service.sparql";
 
 export const v20210111 = {
   Catalog: {
@@ -44,5 +48,13 @@ export const v20210111 = {
     ],
     SHACL: [],
     JSON_SCHEMA: DatasetJsonSchema,
+  },
+  Distributions: {
+    SPARQL: [
+      Distribution01Sparql,
+      Distribution02Sparql,
+      FileDistribution,
+      DataServiceDistribution,
+    ],
   },
 };

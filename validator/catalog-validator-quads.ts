@@ -62,7 +62,6 @@ function validateCatalogUrl(
     reporter.critical(GROUP, "quads.missing-catalog");
     return;
   }
-  console.log("validateCatalogUrl", catalogs, catalogs.length);
   if (catalogs.length > 1) {
     reporter.error(GROUP, "quads.multiple-catalogs", {
       count: catalogs.length,
@@ -93,7 +92,7 @@ async function validateDatasets(
     });
     await datasetValidatorCallback(reporter, dataset);
     ++counter;
-    if (process.env.NODE_ENV === "development" && counter > 12) {
+    if (process.env.NODE_ENV === "development" && counter > 7) {
       break;
     }
   }

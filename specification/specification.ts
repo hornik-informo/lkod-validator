@@ -18,3 +18,11 @@ export type DatasetSparqlValidator = ({
   select: SparqlSelectExecutor,
   reporter: ValidationReporter,
 }) => Promise<void>;
+
+export type DistributionSparqlValidator = ({
+  dataset: string,
+  distribution: string,
+  ask: SparqlAskExecutor,
+  select: SparqlSelectExecutor,
+  reporter: ValidationReporter,
+}) => Promise<void>;
