@@ -1,0 +1,20 @@
+{
+  "@context": "https://ofn.gov.cz/dcat-ap-cz-rozhraní-katalogů-otevřených-dat/2024-05-28/kontexty/rozhraní-katalogů-otevřených-dat.jsonld",
+  "iri": "https://raw.githubusercontent.com/jakubklimek/lkod-test/main/katalog.jsonld",
+  "typ": "Katalog",
+  "název": {
+    "en": "Catalog 002"
+  },
+  "popis": {
+    "en": "Catalog without required fields: czech label, czech description, and publisher. The last one cause it to be invalid by JSON schema."
+  },
+  "kontaktní_bod": {
+    "typ": "Organizace",
+    "jméno": {
+      "cs": "DIA"
+    },
+    "e-mail": "mailto:example@example.com"
+  },
+  "domovská_stránka": "https://data.gov.cz/",
+  "datová_sada": []
+}

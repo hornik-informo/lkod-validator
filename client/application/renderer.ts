@@ -3,6 +3,7 @@ import React from "react";
 /**
  * Monitor method rendering and updates.
  * Use as a hook in a method you want to monitor.
+ * Use only for debugging!
  */
 const useRerender = () => {
   const owner = (React as any)
