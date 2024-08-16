@@ -1,7 +1,6 @@
 import { FetchService } from "./fetch";
 
 export interface DetextedContentType {
-
   /**
    * Content type as determined using standard HTTP tools.
    * Use this as the primary type.
@@ -22,7 +21,6 @@ export interface DetextedContentType {
    * Response code for non SPARQL query.
    */
   statusCode: number | null;
-
 }
 
 export enum ContentType {
@@ -43,7 +41,10 @@ const JSONLD_EXTENSIONS = ["json", "jsonld"];
  * Using given fetch service tries to detect content of the URL.
  * Can make a request to given URL file.
  */
-export async function detectContentType(fetchService: FetchService, url: string): Promise<DetextedContentType> {
+export async function detectContentType(
+  fetchService: FetchService,
+  url: string,
+): Promise<DetextedContentType> {
   const contentTypeFromUrl = detectContentTypeUsingUrlExtension(url);
   if (await isSparqlEndpoint(fetchService, url)) {
     return {
@@ -53,11 +54,14 @@ export async function detectContentType(fetchService: FetchService, url: string)
       contentTypeFromUrl,
     };
   }
-  const contentType = await detectContentTypeUsingContentType(fetchService, url);
+  const contentType = await detectContentTypeUsingContentType(
+    fetchService,
+    url,
+  );
   return {
     ...contentType,
     contentTypeFromUrl,
-  }
+  };
 }
 
 function detectContentTypeUsingUrlExtension(url: string): ContentType | null {
@@ -78,7 +82,10 @@ function getExtension(url: string): string {
 /**
  * Test SPARQL endpoint by executing simple ASK query
  */
-async function isSparqlEndpoint(fetchService: FetchService, url: string): Promise<boolean> {
+async function isSparqlEndpoint(
+  fetchService: FetchService,
+  url: string,
+): Promise<boolean> {
   try {
     // We just execute simple ASK query and if we get a reponse it is a SPARQL endpoint.
     await fetchService.sparqlAsk(url, "ASK {?s ?p ?o}");
@@ -88,17 +95,20 @@ async function isSparqlEndpoint(fetchService: FetchService, url: string): Promis
   }
 }
 
-async function detectContentTypeUsingContentType(fetchService: FetchService, url: string): Promise<{
-  contentType: ContentType | null,
-  rawHeaderContentType: string | null,
-  statusCode: number | null,
+async function detectContentTypeUsingContentType(
+  fetchService: FetchService,
+  url: string,
+): Promise<{
+  contentType: ContentType | null;
+  rawHeaderContentType: string | null;
+  statusCode: number | null;
 }> {
   const response = await fetchService.httpGet(url);
   if (response.payload === null) {
     return {
       contentType: null,
       rawHeaderContentType: null,
-      statusCode: response.statusCode
+      statusCode: response.statusCode,
     };
   }
   const contentTypeHeader = response.payload.headers.get("content-type");
@@ -107,17 +117,19 @@ async function detectContentTypeUsingContentType(fetchService: FetchService, url
     return {
       contentType: contentTypeFromHeader,
       rawHeaderContentType: contentTypeHeader,
-      statusCode: response.statusCode
+      statusCode: response.statusCode,
     };
   }
   return {
     contentType: null,
     rawHeaderContentType: contentTypeHeader,
-    statusCode: response.statusCode
+    statusCode: response.statusCode,
   };
 }
 
-function detectContentTypeFromHeader(contentTypeHeader: string | null): ContentType | null {
+function detectContentTypeFromHeader(
+  contentTypeHeader: string | null,
+): ContentType | null {
   if (contentTypeHeader === null) {
     return null;
   }
@@ -150,11 +162,17 @@ function parseContentTypeHeader(contentTypeHeader: string): {
   };
 }
 
-export async function detectContentTypeWithoutSparql(fetchService: FetchService, url: string): Promise<DetextedContentType> {
+export async function detectContentTypeWithoutSparql(
+  fetchService: FetchService,
+  url: string,
+): Promise<DetextedContentType> {
   const contentTypeFromUrl = detectContentTypeUsingUrlExtension(url);
-  const contentType = await detectContentTypeUsingContentType(fetchService, url);
+  const contentType = await detectContentTypeUsingContentType(
+    fetchService,
+    url,
+  );
   return {
     ...contentType,
     contentTypeFromUrl,
-  }
+  };
 }

@@ -20,7 +20,7 @@ const useRerender = () => {
   }, [name]);
 
   console.log(
-    `Component ${name} rerender with props: ${JSON.stringify(props)} `
+    `Component ${name} rerender with props: ${JSON.stringify(props)} `,
   );
 };
 

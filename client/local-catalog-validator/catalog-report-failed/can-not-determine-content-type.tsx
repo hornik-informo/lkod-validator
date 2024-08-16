@@ -6,7 +6,11 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { Report } from "../validator-service";
 
-export function CanNotDetermineContentType({ report }: { report: Report.LocalCatalogReport }) {
+export function CanNotDetermineContentType({
+  report,
+}: {
+  report: Report.LocalCatalogReport;
+}) {
   const { t } = useTranslation();
 
   let content: React.ReactNode = null;
@@ -23,10 +27,15 @@ export function CanNotDetermineContentType({ report }: { report: Report.LocalCat
     content = (
       <div>
         <div>{t("ui.can-not-determine-content-type-status-summary")}</div>
-        <div>{t("ui.can-not-determine-content-type-status-suggestion-{status-code}-{content-type}", {
-          "status-code": report.loadingFailure?.contentTypeStatusCode,
-          "content-type": report.loadingFailure?.headerContentType ?? "",
-        })}</div>
+        <div>
+          {t(
+            "ui.can-not-determine-content-type-status-suggestion-{status-code}-{content-type}",
+            {
+              "status-code": report.loadingFailure?.contentTypeStatusCode,
+              "content-type": report.loadingFailure?.headerContentType ?? "",
+            },
+          )}
+        </div>
       </div>
     );
   }
@@ -37,4 +46,3 @@ export function CanNotDetermineContentType({ report }: { report: Report.LocalCat
     </div>
   );
 }
-

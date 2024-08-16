@@ -5,7 +5,10 @@ export { ContentType } from "../../service/content-type";
 
 import { type LocalCatalogReport } from "../../local-catalog-validator/local-catalog-validator-model";
 import { createLocalCatalogReport } from "../../local-catalog-validator/local-catalog-validator";
-import { loadSchemasToJsonSchemaService, LocalCatalogLoader } from "../../local-catalog-validator/local-catalog-loader";
+import {
+  loadSchemasToJsonSchemaService,
+  LocalCatalogLoader,
+} from "../../local-catalog-validator/local-catalog-loader";
 
 import { createFetchService } from "../../service/fetch";
 import { createJsonSchemaService } from "../../service/json-schema";
@@ -48,7 +51,6 @@ const jsonSchemaService = createJsonSchemaService();
 loadSchemasToJsonSchemaService(jsonSchemaService);
 
 export function useValidatorServiceType(): ValidatorServiceType {
-
   const [state, setState] = useState<State>({
     url: null,
     working: false,
@@ -89,27 +91,33 @@ export function useValidatorServiceType(): ValidatorServiceType {
       },
     };
 
-    const loader = new LocalCatalogLoader(fetchService, jsonSchemaService, logger);
+    const loader = new LocalCatalogLoader(
+      fetchService,
+      jsonSchemaService,
+      logger,
+    );
 
-    loader.load(url).then(localCatalog => {
-      const report = createLocalCatalogReport(localCatalog);
-      console.log("validation finisher", {localCatalog, report})
-      setState(previous => {
-        if (previous.url === url) {
-          // Update state.
-          return {
-            ...previous,
-            working: false,
-            completed: true,
-            statusMessage: "",
-            report,
+    loader
+      .load(url)
+      .then(localCatalog => {
+        const report = createLocalCatalogReport(localCatalog);
+        console.log("validation finisher", { localCatalog, report });
+        setState(previous => {
+          if (previous.url === url) {
+            // Update state.
+            return {
+              ...previous,
+              working: false,
+              completed: true,
+              statusMessage: "",
+              report,
+            };
+          } else {
+            // We got outdated validation report.
+            return previous;
           }
-        } else {
-          // We got outdated validation report.
-          return previous;
-        }
-      });
-    })
+        });
+      })
       .catch(error => {
         setState(previous => {
           if (previous.url === url) {
@@ -120,7 +128,7 @@ export function useValidatorServiceType(): ValidatorServiceType {
               completed: true,
               statusMessage: "ui.validation-failed-{error}",
               statusArgs: { error },
-            }
+            };
           } else {
             // We got outdated validation report.
             return previous;

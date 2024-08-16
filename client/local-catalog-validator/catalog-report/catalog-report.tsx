@@ -22,7 +22,11 @@ import Pagination from "@mui/material/Pagination";
 import { Report, ContentType } from "../validator-service";
 import { IssuesList } from "./issues-list";
 
-export function LocalCatalogReport({ report }: { report: Report.LocalCatalogReport }) {
+export function LocalCatalogReport({
+  report,
+}: {
+  report: Report.LocalCatalogReport;
+}) {
   return (
     <>
       <SummarySection state={report.summary} />
@@ -52,9 +56,7 @@ function SummarySection({ state }: { state: Report.Summary }) {
         ))}
         <dt>{t("ui.catalog-title")}</dt>
         {state.catalogs.map(catalog => (
-          <dd key={catalog.iri}>
-            {catalog.czechTitle}
-          </dd>
+          <dd key={catalog.iri}>{catalog.czechTitle}</dd>
         ))}
       </dl>
       <IssuesList issues={state.issues} />
@@ -71,8 +73,7 @@ function SummarySection({ state }: { state: Report.Summary }) {
         <dd>{state.highValueDatasets.length}</dd>
       </dl>
     </>
-  )
-
+  );
 }
 
 function contentTypeToHumanLabel(contentType: ContentType | null): string {
@@ -84,7 +85,7 @@ function contentTypeToHumanLabel(contentType: ContentType | null): string {
     case ContentType.TURTLE:
       return "ui.content-type-TURTLE";
     case null:
-      return "ui.content-type-unknown"
+      return "ui.content-type-unknown";
   }
 }
 
@@ -94,14 +95,22 @@ function CatalogsSection(props: { catalogs: Report.Catalog[] }) {
 
 const PAGE_SIZE = 25;
 
-function ResourcesSection({ resources }: { resources: Report.DatasetReference[] }) {
+function ResourcesSection({
+  resources,
+}: {
+  resources: Report.DatasetReference[];
+}) {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [content, setContent] = useState<React.ReactElement[]>([]);
-  const [requiredLevel, setRequiredevel] = useState(() => selectInitialFilterLevel(resources));
-  const [showDetails, setShowDetails] = useState(() => Report.isLeftHigherOrEqual(requiredLevel, Report.Level.WARNING));
+  const [requiredLevel, setRequiredevel] = useState(() =>
+    selectInitialFilterLevel(resources),
+  );
+  const [showDetails, setShowDetails] = useState(() =>
+    Report.isLeftHigherOrEqual(requiredLevel, Report.Level.WARNING),
+  );
 
   useEffect(() => {
     // Collect all content we can render, we need it so we know
@@ -109,16 +118,31 @@ function ResourcesSection({ resources }: { resources: Report.DatasetReference[] 
     const nextContent: React.ReactElement[] = [];
     for (const resource of resources) {
       if (filterByLevel(resource, requiredLevel)) {
-        nextContent.push(<ResourceSection key={"resource:" + resource.accessUrl} resource={resource} />);
+        nextContent.push(
+          <ResourceSection
+            key={"resource:" + resource.accessUrl}
+            resource={resource}
+          />,
+        );
       }
       for (const dataset of resource.datasets) {
         // We show all on INFO level, otherwise we witer only those
         // with an issue a certain level.
         // Thus only INFO level shows ALL.
         if (requiredLevel === Report.Level.INFO) {
-          nextContent.push(<DatasetSection key={"dataset:" + resource.accessUrl + ":" + dataset.iri} dataset={dataset} />);
+          nextContent.push(
+            <DatasetSection
+              key={"dataset:" + resource.accessUrl + ":" + dataset.iri}
+              dataset={dataset}
+            />,
+          );
         } else if (filterByLevel(dataset, requiredLevel)) {
-          nextContent.push(<DatasetSection key={"dataset:" + resource.accessUrl + ":" + dataset.iri} dataset={dataset} />);
+          nextContent.push(
+            <DatasetSection
+              key={"dataset:" + resource.accessUrl + ":" + dataset.iri}
+              dataset={dataset}
+            />,
+          );
         }
       }
     }
@@ -132,11 +156,7 @@ function ResourcesSection({ resources }: { resources: Report.DatasetReference[] 
   let contentToRender: React.ReactElement | null = null;
   if (showDetails) {
     if (content.length === 0) {
-      contentToRender = (
-        <Box sx={{ m: 2 }}>
-          {t("ui.no-search-results")}
-        </Box>
-      );
+      contentToRender = <Box sx={{ m: 2 }}>{t("ui.no-search-results")}</Box>;
     } else {
       contentToRender = (
         <>
@@ -147,25 +167,31 @@ function ResourcesSection({ resources }: { resources: Report.DatasetReference[] 
             shape="rounded"
             size="large"
             page={page}
-            onChange={(_, value) => setPage(value)} />
+            onChange={(_, value) => setPage(value)}
+          />
         </>
-      )
+      );
     }
   }
 
   return (
     <React.Fragment>
-      <Toolbox value={requiredLevel} onChange={setRequiredevel} show={showDetails} setShow={setShowDetails} />
+      <Toolbox
+        value={requiredLevel}
+        onChange={setRequiredevel}
+        show={showDetails}
+        setShow={setShowDetails}
+      />
       {contentToRender}
     </React.Fragment>
   );
 }
 
 type ToolboxProps = {
-  value: Report.Level,
-  onChange: (value: Report.Level) => void,
-  show: boolean,
-  setShow: (value: boolean) => void,
+  value: Report.Level;
+  onChange: (value: Report.Level) => void;
+  show: boolean;
+  setShow: (value: boolean) => void;
 };
 
 function Toolbox(props: ToolboxProps) {
@@ -176,7 +202,7 @@ function Toolbox(props: ToolboxProps) {
       <Button variant="outlined" onClick={() => props.setShow(!props.show)}>
         {props.show ? t("ui.hide-details") : t("ui.show-details")}
       </Button>
-      {props.show ?
+      {props.show ? (
         <FormControl sx={{ minWidth: 300 }}>
           <InputLabel variant="standard" htmlFor="filter-selector">
             {t("ui.level-filter")}
@@ -184,14 +210,17 @@ function Toolbox(props: ToolboxProps) {
           <NativeSelect
             inputProps={{ id: "filter-selector" }}
             value={props.value}
-            onChange={event => props.onChange(event.target.value as Report.Level)}
+            onChange={event =>
+              props.onChange(event.target.value as Report.Level)
+            }
           >
             <option value={Report.Level.INFO}>{t("ui.info")}</option>
             <option value={Report.Level.WARNING}>{t("ui.warning")}</option>
             <option value={Report.Level.ERROR}>{t("ui.error")}</option>
             <option value={Report.Level.CRITICAL}>{t("ui.critical")}</option>
           </NativeSelect>
-        </FormControl> : null}
+        </FormControl>
+      ) : null}
     </div>
   );
 }
@@ -202,23 +231,32 @@ function Toolbox(props: ToolboxProps) {
  *
  * @returns Initial log level.
  */
-function selectInitialFilterLevel(references: Report.DatasetReference[]): Report.Level {
+function selectInitialFilterLevel(
+  references: Report.DatasetReference[],
+): Report.Level {
   let result: Report.Level = Report.Level.INFO;
   for (const reference of references) {
-    result = reference.issues.map(issue => issue.level).reduce(Report.higherLevel, result);
+    result = reference.issues
+      .map(issue => issue.level)
+      .reduce(Report.higherLevel, result);
     for (const dataset of reference.datasets) {
-      result = dataset.issues.map(issue => issue.level).reduce(Report.higherLevel, result);
+      result = dataset.issues
+        .map(issue => issue.level)
+        .reduce(Report.higherLevel, result);
     }
     if (result === Report.Level.ERROR || result === Report.Level.CRITICAL) {
       // There is no need to search any further.
       return Report.Level.ERROR;
     }
   }
-  console.log("selectInitialFilterLevel", {result})
+  console.log("selectInitialFilterLevel", { result });
   return result;
 }
 
-function filterByLevel({ issues }: { issues: Report.Issue[] }, level: Report.Level): boolean {
+function filterByLevel(
+  { issues }: { issues: Report.Issue[] },
+  level: Report.Level,
+): boolean {
   for (const issue of issues) {
     if (Report.isLeftHigherOrEqual(issue.level, level)) {
       return true;
@@ -227,7 +265,11 @@ function filterByLevel({ issues }: { issues: Report.Issue[] }, level: Report.Lev
   return false;
 }
 
-function ResourceSection({ resource }: { resource: Report.DatasetReference }): React.ReactElement {
+function ResourceSection({
+  resource,
+}: {
+  resource: Report.DatasetReference;
+}): React.ReactElement {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(true);
@@ -243,7 +285,11 @@ function ResourceSection({ resource }: { resource: Report.DatasetReference }): R
           secondary={resource.accessUrl}
         />
         <Box sx={{ mr: "1rem" }}>
-          <a href={resource.accessUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            href={resource.accessUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             <OpenInNewIcon />
           </a>
         </Box>
@@ -255,10 +301,13 @@ function ResourceSection({ resource }: { resource: Report.DatasetReference }): R
         <IssuesList issues={resource.issues} />
       </Collapse>
     </>
-  )
+  );
 }
 
-function selectLevelColor(issues: Report.Issue[], defaultColor: string): string {
+function selectLevelColor(
+  issues: Report.Issue[],
+  defaultColor: string,
+): string {
   let includesWarning = false;
   for (const issue of issues) {
     switch (issue.level) {
@@ -276,7 +325,11 @@ function selectLevelColor(issues: Report.Issue[], defaultColor: string): string 
   return defaultColor;
 }
 
-function DatasetSection({ dataset }: { dataset: Report.Dataset }): React.ReactElement {
+function DatasetSection({
+  dataset,
+}: {
+  dataset: Report.Dataset;
+}): React.ReactElement {
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(true);
@@ -285,12 +338,11 @@ function DatasetSection({ dataset }: { dataset: Report.Dataset }): React.ReactEl
     <>
       <ListItem>
         <ListItemIcon>
-          <FolderIcon sx={{ color: selectLevelColor(dataset.issues, "green") }} />
+          <FolderIcon
+            sx={{ color: selectLevelColor(dataset.issues, "green") }}
+          />
         </ListItemIcon>
-        <ListItemText
-          primary={t("ui.dataset")}
-          secondary={dataset.iri}
-        />
+        <ListItemText primary={t("ui.dataset")} secondary={dataset.iri} />
         <Box sx={{ mr: "1rem" }}>
           <a href={dataset.accessUrl} target="_blank" rel="noopener noreferrer">
             <OpenInNewIcon />
@@ -306,5 +358,5 @@ function DatasetSection({ dataset }: { dataset: Report.Dataset }): React.ReactEl
         <IssuesList issues={dataset.issues} />
       </Collapse>
     </>
-  )
+  );
 }

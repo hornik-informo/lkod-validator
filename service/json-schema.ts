@@ -4,19 +4,16 @@ import "@hyperjump/json-schema/draft-2019-09";
 import "@hyperjump/json-schema/draft-2020-12";
 
 export interface JsonSchemaService {
-
   addJsonSchema(jsonSchema: object): string;
 
   addJsonSchemaString(jsonSchema: string): string;
 
-  validate(jsonSchemaIdentifier: string, value: unknown) : Promise<boolean>;
-
+  validate(jsonSchemaIdentifier: string, value: unknown): Promise<boolean>;
 }
 
 export const createJsonSchemaService = () => new DefaultJsonSchemaService();
 
 class DefaultJsonSchemaService implements JsonSchemaService {
-
   addJsonSchema(jsonSchema: object): string {
     addSchema(patchJsonSchemaPattern(jsonSchema));
     return jsonSchema["$id"];
@@ -31,7 +28,6 @@ class DefaultJsonSchemaService implements JsonSchemaService {
     const report = await validate(jsonSchemaIdentifier, value, BASIC);
     return report.valid;
   }
-
 }
 
 function patchJsonSchemaPattern(schemaObject: any): any {

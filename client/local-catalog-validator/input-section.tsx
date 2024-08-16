@@ -10,12 +10,10 @@ import { useUrlQuery } from "../application/url-query";
  * Allow users to provide URL of a local catalog to validate.
  */
 export function InputSection(props: {
-  onStartValidation: (url: string) => void,
-  disabled: boolean,
+  onStartValidation: (url: string) => void;
+  disabled: boolean;
 }) {
-  return (
-    <InputArea {...props} />
-  )
+  return <InputArea {...props} />;
 }
 
 const InputArea = (props: {
@@ -25,7 +23,9 @@ const InputArea = (props: {
   const { t } = useTranslation();
   const urlQuery = useUrlQuery();
   const { url, onChangeUrl, onSubmit } = useInputAreaController(
-    urlQuery.catalog, props.onStartValidation);
+    urlQuery.catalog,
+    props.onStartValidation,
+  );
   return (
     <div>
       <TextField
@@ -51,7 +51,7 @@ const InputArea = (props: {
 
 const useInputAreaController = (
   defaultValue: null | string,
-  onStartValidation: (url: string) => void
+  onStartValidation: (url: string) => void,
 ) => {
   const [url, setUrl] = useState(defaultValue ?? "");
 
@@ -68,12 +68,12 @@ const useInputAreaController = (
     () => (event: ChangeEvent<HTMLInputElement>) => {
       setUrl(event.target.value);
     },
-    [setUrl]
+    [setUrl],
   );
 
   const onSubmit = useMemo(
     () => () => onStartValidation(url),
-    [url, onStartValidation]
+    [url, onStartValidation],
   );
 
   return {

@@ -98,9 +98,7 @@
         "format": "iri",
         "title": "Související geografické území - prvek z RÚIAN",
         "pattern": "^https\\://linked\\.cuzk\\.cz/resource/ruian/.*$",
-        "examples": [
-          "https://linked.cuzk.cz/resource/ruian/stat/1"
-        ]
+        "examples": ["https://linked.cuzk.cz/resource/ruian/stat/1"]
       }
     },
     "geografické_území": {
@@ -116,9 +114,7 @@
     },
     "časové_pokrytí": {
       "type": "object",
-      "required": [
-        "typ"
-      ],
+      "required": ["typ"],
       "properties": {
         "typ": {
           "oneOf": [
@@ -140,31 +136,23 @@
           "type": "string",
           "format": "date",
           "title": "Datum začátku",
-          "examples": [
-            "2019-01-01+01:00"
-          ]
+          "examples": ["2019-01-01+01:00"]
         },
         "konec": {
           "type": "string",
           "format": "date",
           "title": "Datum konce",
-          "examples": [
-            "2019-01-01+01:00"
-          ]
+          "examples": ["2019-01-01+01:00"]
         }
       }
     },
     "kontaktní_bod": {
       "type": "object",
-      "required": [
-        "typ"
-      ],
+      "required": ["typ"],
       "properties": {
         "typ": {
           "type": "string",
-          "examples": [
-            "Organizace"
-          ]
+          "examples": ["Organizace"]
         },
         "jméno": {
           "$ref": "https://ofn.gov.cz/základní-datové-typy/2020-07-01/schémata/text.json"
@@ -173,9 +161,7 @@
           "type": "string",
           "format": "iri",
           "pattern": "^mailto\\:",
-          "examples": [
-            "mailto:sekretariat.190@mdcr.cz"
-          ]
+          "examples": ["mailto:sekretariat.190@mdcr.cz"]
         }
       }
     },
@@ -193,9 +179,7 @@
         "type": "string",
         "format": "iri",
         "title": "Specifikace",
-        "examples": [
-          "https://ofn.gov.cz/turistické-cíle/2020-07-01/"
-        ]
+        "examples": ["https://ofn.gov.cz/turistické-cíle/2020-07-01/"]
       }
     },
     "koncept_euroVoc": {
@@ -205,9 +189,7 @@
         "format": "iri",
         "pattern": "^http\\://eurovoc\\.europa\\.eu/.*$",
         "title": "Klasifikace dle EuroVoc",
-        "examples": [
-          "http://eurovoc.europa.eu/1001"
-        ]
+        "examples": ["http://eurovoc.europa.eu/1001"]
       }
     },
     "prostorové_rozlišení_v_metrech": {
@@ -216,34 +198,26 @@
           "type": "number",
           "title": "Prostorové rozlišení v metrech",
           "description": "Prostorové rozlišení v metrech jako JSON číslo pro zpětnou kompatibilitu. Způsobuje problémy s datovým typem xsd:decimal.",
-          "examples": [
-            0.5
-          ]
+          "examples": [0.5]
         },
         {
           "type": "string",
           "title": "Prostorové rozlišení v metrech",
           "description": "Prostorové rozlišení v metrech jako JSON řetězec. Preferovaná varianta pro kompatibilitu s datovým typem xsd:decimal.",
-          "examples": [
-            "0.5"
-          ]
+          "examples": ["0.5"]
         }
       ]
     },
     "časové_rozlišení": {
       "type": "string",
       "title": "Časové rozlišení",
-      "examples": [
-        "P1D"
-      ]
+      "examples": ["P1D"]
     },
     "je_součástí": {
       "type": "string",
       "format": "iri",
       "title": "Je součástí",
-      "examples": [
-        "https://lkod.mvcr.cz/zdroj/datové-série/12345"
-      ]
+      "examples": ["https://lkod.mvcr.cz/zdroj/datové-série/12345"]
     },
     "právní_předpis": {
       "type": "array",
@@ -263,12 +237,7 @@
           {
             "title": "Distribuce",
             "type": "object",
-            "required": [
-              "typ",
-              "iri",
-              "podmínky_užití",
-              "přístupové_url"
-            ],
+            "required": ["typ", "iri", "podmínky_užití", "přístupové_url"],
             "properties": {
               "typ": {
                 "oneOf": [
@@ -374,9 +343,7 @@
                 "title": "Přístupové URL",
                 "minLength": 8,
                 "pattern": "^https://",
-                "examples": [
-                  "https://portal.cisjr.cz/sparql"
-                ]
+                "examples": ["https://portal.cisjr.cz/sparql"]
               },
               "název": {
                 "$ref": "https://ofn.gov.cz/základní-datové-typy/2020-07-01/schémata/text.json"
@@ -399,18 +366,11 @@
               {
                 "title": "Datová služba",
                 "type": "object",
-                "required": [
-                  "přístupová_služba"
-                ],
+                "required": ["přístupová_služba"],
                 "properties": {
                   "přístupová_služba": {
                     "type": "object",
-                    "required": [
-                      "typ",
-                      "název",
-                      "přístupový_bod",
-                      "iri"
-                    ],
+                    "required": ["typ", "název", "přístupový_bod", "iri"],
                     "properties": {
                       "typ": {
                         "oneOf": [
@@ -503,11 +463,7 @@
               {
                 "title": "Soubor ke stažení",
                 "type": "object",
-                "required": [
-                  "formát",
-                  "typ_média",
-                  "soubor_ke_stažení"
-                ],
+                "required": ["formát", "typ_média", "soubor_ke_stažení"],
                 "properties": {
                   "formát": {
                     "type": "string",

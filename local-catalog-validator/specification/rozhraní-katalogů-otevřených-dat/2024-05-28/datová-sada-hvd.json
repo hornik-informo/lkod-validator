@@ -8,10 +8,7 @@
     {
       "type": "object",
       "title": "Datová sada",
-      "required": [
-        "právní_předpis",
-        "kategorie_hvd"
-      ],
+      "required": ["právní_předpis", "kategorie_hvd"],
       "properties": {
         "právní_předpis": {
           "type": "array",
@@ -26,9 +23,7 @@
             "format": "iri",
             "pattern": "^http\\://data\\.europa\\.eu/bna/c_.*$",
             "minItems": 1,
-            "example": [
-              "http://data.europa.eu/bna/c_1e787364"
-            ]
+            "example": ["http://data.europa.eu/bna/c_1e787364"]
           }
         },
         "distribuce": {
@@ -82,9 +77,7 @@
                           "format": "iri",
                           "pattern": "^http\\://data\\.europa\\.eu/bna/c_.*$",
                           "minItems": 1,
-                          "example": [
-                            "http://data.europa.eu/bna/c_1e787364"
-                          ]
+                          "example": ["http://data.europa.eu/bna/c_1e787364"]
                         }
                       },
                       "dokumentace": {
@@ -110,15 +103,11 @@
                       },
                       "kontaktní_bod": {
                         "type": "object",
-                        "required": [
-                          "typ"
-                        ],
+                        "required": ["typ"],
                         "properties": {
                           "typ": {
                             "type": "string",
-                            "examples": [
-                              "Organizace"
-                            ]
+                            "examples": ["Organizace"]
                           },
                           "jméno": {
                             "$ref": "https://ofn.gov.cz/základní-datové-typy/2020-07-01/schémata/text.json"

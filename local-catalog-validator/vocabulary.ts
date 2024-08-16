@@ -1,4 +1,3 @@
-
 export const TYPE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type";
 
 export const CATALOG = "http://www.w3.org/ns/dcat#Catalog";
@@ -21,13 +20,16 @@ export const HAS_KEYWORD = "http://www.w3.org/ns/dcat#keyword";
 
 export const HAS_THEME = "http://www.w3.org/ns/dcat#theme";
 
-export const HAS_ACCRUAL_PERIODICITY = "http://purl.org/dc/terms/accrualPeriodicity";
+export const HAS_ACCRUAL_PERIODICITY =
+  "http://purl.org/dc/terms/accrualPeriodicity";
 
 export const HAS_SPATIAL = "http://purl.org/dc/terms/spatial";
 
-export const HAS_APPLICABLE_LEGISLATION = "http://data.europa.eu/r5r/applicableLegislation";
+export const HAS_APPLICABLE_LEGISLATION =
+  "http://data.europa.eu/r5r/applicableLegislation";
 
-export const HAS_TERMS_OF_USE = "https://data.gov.cz/slovník/podmínky-užití/specifikace";
+export const HAS_TERMS_OF_USE =
+  "https://data.gov.cz/slovník/podmínky-užití/specifikace";
 
 export const HAS_ACCESS_URL = "http://www.w3.org/ns/dcat#accessURL";
 

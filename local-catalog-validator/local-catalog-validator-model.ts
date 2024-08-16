@@ -31,20 +31,19 @@ const LevelSeverityMap = {
   [Level.CRITICAL]: 4,
 };
 
-export function higherLevel(left: Level, right: Level) : Level {
+export function higherLevel(left: Level, right: Level): Level {
   return isLeftHigher(left, right) ? left : right;
 }
 
-export function isLeftHigher(left: Level, right: Level) : boolean {
+export function isLeftHigher(left: Level, right: Level): boolean {
   return LevelSeverityMap[left] > LevelSeverityMap[right];
 }
 
-export function isLeftHigherOrEqual(left: Level, right: Level) : boolean {
+export function isLeftHigherOrEqual(left: Level, right: Level): boolean {
   return LevelSeverityMap[left] >= LevelSeverityMap[right];
 }
 
 export interface Issue {
-
   level: Level;
 
   /**
@@ -56,7 +55,6 @@ export interface Issue {
    * Arguments for substitution.
    */
   args?: any;
-
 }
 
 export function includesErrorOrHigher(issues: Issue[]): boolean {
@@ -98,7 +96,6 @@ export function includesInfoOrLower(issues: Issue[]): boolean {
 }
 
 export interface LocalCatalogReport {
-
   loadingFailure: LoadingFailure | null;
 
   summary: Summary;
@@ -106,14 +103,12 @@ export interface LocalCatalogReport {
   catalogs: Catalog[];
 
   datasets: DatasetReference[];
-
 }
 
 /**
  * Provides detail information when we fail to load the catalog entry point.
  */
 export interface LoadingFailure {
-
   headerContentType: string | null;
 
   contentTypeStatusCode: number | null;
@@ -123,11 +118,9 @@ export interface LoadingFailure {
   fetchStatusCode: number | null;
 
   conversionToRdfFailed: boolean | null;
-
 }
 
 export interface Summary {
-
   contentType: ContentType | null;
 
   isContentTypeFromExtension: boolean;
@@ -166,7 +159,6 @@ export interface Summary {
 }
 
 export interface Catalog {
-
   sourceUrl: string;
 
   iri: string;
@@ -183,14 +175,12 @@ export interface Catalog {
   withoutPublisher: boolean;
 
   withPublisherButNotOvm: boolean;
-
 }
 
 /**
  * A referenced dataset resource.
  */
 export interface DatasetReference {
-
   contentType: ContentType | null;
 
   accessUrl: string;
@@ -220,11 +210,9 @@ export interface DatasetReference {
    * Issues are only related to this entity.
    */
   issues: Issue[];
-
 }
 
 export interface Dataset {
-
   accessUrl: string;
 
   iri: string;
@@ -265,32 +253,26 @@ export interface Dataset {
    * Issues are only related to this entity.
    */
   issues: Issue[];
-
 }
 
 /**
  * Extra validation for high value datasets.
  */
 export interface HighValueDataset {
-
   withoutHvdCategory: boolean;
 
   withHvdTopCategory: boolean;
-
 }
 
 /**
  * Extra validation for dataset series.
  */
-export interface DatasetSeries {
-
-}
+export interface DatasetSeries {}
 
 /**
  * Distribution base interface, should not be used alone.
  */
 export interface Distribution {
-
   iri: string;
 
   withoutAccessURL: boolean;
@@ -301,11 +283,9 @@ export interface Distribution {
    * Issues are only related to this entity.
    */
   issues: Issue[];
-
 }
 
 export interface DataServiceDistribution extends Distribution {
-
   isDataServiceDistribution: true;
 
   withoutCzechTitle: boolean;
@@ -313,15 +293,15 @@ export interface DataServiceDistribution extends Distribution {
   withoutEndpointURL: boolean;
 
   highValue: HighValueDataServiceDistribution | null;
-
 }
 
-export const isDataServiceDistribution = (distribution: Distribution): distribution is DataServiceDistribution => {
+export const isDataServiceDistribution = (
+  distribution: Distribution,
+): distribution is DataServiceDistribution => {
   return distribution["isDataServiceDistribution"] === true;
-}
+};
 
 export interface HighValueDataServiceDistribution {
-
   withoutHvdCategory: boolean;
 
   withHvdTopCategory: boolean;
@@ -329,11 +309,9 @@ export interface HighValueDataServiceDistribution {
   withoutContactPoint: boolean;
 
   withoutPage: boolean;
-
 }
 
 export interface FileDistribution extends Distribution {
-
   isFileDistribution: true;
 
   withoutDownloadURL: boolean;
@@ -347,13 +325,12 @@ export interface FileDistribution extends Distribution {
   withFormatButNotFromCodelist: boolean;
 
   highValue: HighValueFileDistribution | null;
-
 }
 
-export interface HighValueFileDistribution {
+export interface HighValueFileDistribution {}
 
-}
-
-export const isFileDistribution = (distribution: Distribution): distribution is FileDistribution => {
+export const isFileDistribution = (
+  distribution: Distribution,
+): distribution is FileDistribution => {
   return distribution["isFileDistribution"] === true;
-}
+};

@@ -6,7 +6,10 @@ export async function jsonLdToRdf(document: any): Promise<RDF.Quad[]> {
   return (await jsonld.toRDF(document)) as RDF.Quad[];
 }
 
-export function stringN3ToRdf(document: string, format: N3.BaseFormat): Promise<RDF.Quad[]> {
+export function stringN3ToRdf(
+  document: string,
+  format: N3.BaseFormat,
+): Promise<RDF.Quad[]> {
   return new Promise((accept, reject) => {
     const parser = new N3.Parser({ format });
     const collector: N3.Quad[] = [];
@@ -22,7 +25,10 @@ export function stringN3ToRdf(document: string, format: N3.BaseFormat): Promise<
   });
 }
 
-export function streamN3ToRdf(document: ReadableStreamDefaultReader, format: N3.BaseFormat): Promise<RDF.Quad[]> {
+export function streamN3ToRdf(
+  document: ReadableStreamDefaultReader,
+  format: N3.BaseFormat,
+): Promise<RDF.Quad[]> {
   const collector: N3.Quad[] = [];
   return new Promise((accept, reject) => {
     const parser = new N3StreamReader(
@@ -30,7 +36,7 @@ export function streamN3ToRdf(document: ReadableStreamDefaultReader, format: N3.
       {
         onQuad: quad => collector.push(quad),
         onError: error => reject(error),
-      }
+      },
     );
     parser
       .parse(document)
@@ -71,7 +77,11 @@ class N3StreamReader {
   protected initializeParser() {
     const source = this.createCaptureSource();
 
-    const callback : N3.ParseCallback<N3.Quad> = (error: Error, quad: N3.Quad, prefixes: N3.Prefixes) => {
+    const callback: N3.ParseCallback<N3.Quad> = (
+      error: Error,
+      quad: N3.Quad,
+      prefixes: N3.Prefixes,
+    ) => {
       if (error) {
         this.handler.onError(error);
       }

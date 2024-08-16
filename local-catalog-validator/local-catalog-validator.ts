@@ -3,7 +3,9 @@ import * as Codelist from "./codelist";
 import * as Loader from "./local-catalog-loader-model";
 import * as Model from "./local-catalog-validator-model";
 
-export function createLocalCatalogReport(report: Loader.LocalCatalog): Model.LocalCatalogReport {
+export function createLocalCatalogReport(
+  report: Loader.LocalCatalog,
+): Model.LocalCatalogReport {
   const loadingFailure = reportToLoadingFailure(report);
   const catalogs = reportToCatalogs(report);
   const resources = reportToEntries(report);
@@ -15,9 +17,15 @@ export function createLocalCatalogReport(report: Loader.LocalCatalog): Model.Loc
   };
 }
 
-function reportToLoadingFailure(report: Loader.LocalCatalog): Model.LoadingFailure | null {
+function reportToLoadingFailure(
+  report: Loader.LocalCatalog,
+): Model.LoadingFailure | null {
   const entryPoint = report.catalog.entryPoint;
-  if (entryPoint.contentType !== null && !entryPoint.failedToFetchData && !entryPoint.conversionToRdfFailed) {
+  if (
+    entryPoint.contentType !== null &&
+    !entryPoint.failedToFetchData &&
+    !entryPoint.conversionToRdfFailed
+  ) {
     return null;
   }
   return {
@@ -37,7 +45,9 @@ function reportToCatalogs(report: Loader.LocalCatalog): Model.Catalog[] {
     withoutCzechTitle: !hasCzechValue(catalog.title),
     withoutCzechDescription: !hasCzechValue(catalog.description),
     withoutPublisher: catalog.publishers.length === 0,
-    withPublisherButNotOvm: notEmptyAndWithout(catalog.publishers, publisher => Codelist.isPublisherOvm(publisher.url)),
+    withPublisherButNotOvm: notEmptyAndWithout(catalog.publishers, publisher =>
+      Codelist.isPublisherOvm(publisher.url),
+    ),
   }));
 }
 
@@ -73,13 +83,18 @@ function includes<T>(array: T[], predicate: (item: T) => boolean) {
   return array.findIndex(item => predicate(item)) !== -1;
 }
 
-function reportToEntries(report: Loader.LocalCatalog): Model.DatasetReference[] {
+function reportToEntries(
+  report: Loader.LocalCatalog,
+): Model.DatasetReference[] {
   return report.datasets.map(createDatasetReference);
 }
 
-function createDatasetReference(wrap: Loader.DatasetWrap): Model.DatasetReference {
+function createDatasetReference(
+  wrap: Loader.DatasetWrap,
+): Model.DatasetReference {
   const entry = wrap.entryPoint;
-  const failedToDetectContentType = (entry.contentType ?? entry.contentTypeFromUrl ?? null) === null;
+  const failedToDetectContentType =
+    (entry.contentType ?? entry.contentTypeFromUrl ?? null) === null;
   const failedToFetch = entry.failedToFetchData;
   const failedToConvertToRdf = entry.conversionToRdfFailed;
   const isEmpty = !failedToConvertToRdf && wrap.datasets.length === 0;
@@ -114,17 +129,20 @@ function createDatasetReference(wrap: Loader.DatasetWrap): Model.DatasetReferenc
   });
 }
 
-function populateDatasetReferenceIssues(resource: Model.DatasetReference): Model.DatasetReference {
+function populateDatasetReferenceIssues(
+  resource: Model.DatasetReference,
+): Model.DatasetReference {
   if (resource.failedToDetectContentType) {
     return {
       ...resource,
-      issues: [{
-        level: Model.Level.CRITICAL,
-        payload: "issues.resource.failed-to-determine-content-type",
-      }],
+      issues: [
+        {
+          level: Model.Level.CRITICAL,
+          payload: "issues.resource.failed-to-determine-content-type",
+        },
+      ],
     };
-  }
-  else if (resource.failedToFetch) {
+  } else if (resource.failedToFetch) {
     let message = "issues.resource.failed-to-fetch";
     switch (resource.contentType) {
       case ContentType.JSONLD:
@@ -141,19 +159,22 @@ function populateDatasetReferenceIssues(resource: Model.DatasetReference): Model
     }
     return {
       ...resource,
-      issues: [{
-        level: Model.Level.CRITICAL,
-        payload: message,
-      }],
+      issues: [
+        {
+          level: Model.Level.CRITICAL,
+          payload: message,
+        },
+      ],
     };
-  }
-  else if (resource.failedToConvertToRdf) {
+  } else if (resource.failedToConvertToRdf) {
     return {
       ...resource,
-      issues: [{
-        level: Model.Level.CRITICAL,
-        payload: "issues.resource.failed-to-convert-to-rdf",
-      }],
+      issues: [
+        {
+          level: Model.Level.CRITICAL,
+          payload: "issues.resource.failed-to-convert-to-rdf",
+        },
+      ],
     };
   }
 
@@ -189,22 +210,44 @@ function populateDatasetReferenceIssues(resource: Model.DatasetReference): Model
   };
 }
 
-function createDataset(entry: Loader.DatasetEntryPoint, dataset: Loader.Dataset): Model.Dataset {
+function createDataset(
+  entry: Loader.DatasetEntryPoint,
+  dataset: Loader.Dataset,
+): Model.Dataset {
   const withoutCzechTitle = !hasCzechValue(dataset.title);
   const withoutCzechDescription = !hasCzechValue(dataset.description);
   const withoutPublisher = dataset.publishers.length === 0;
-  const withPublisherButNotOvm = notEmptyAndWithout(dataset.publishers, publisher => Codelist.isPublisherOvm(publisher.url));
+  const withPublisherButNotOvm = notEmptyAndWithout(
+    dataset.publishers,
+    publisher => Codelist.isPublisherOvm(publisher.url),
+  );
   const withoutAccrualPeriodicity = dataset.accrualPeriodicities.length === 0;
-  const withAccrualPeriodicityButNotEurovoc = notEmptyAndWithout(dataset.accrualPeriodicities, Codelist.isFromAccrualPeriodicityCodelist);
+  const withAccrualPeriodicityButNotEurovoc = notEmptyAndWithout(
+    dataset.accrualPeriodicities,
+    Codelist.isFromAccrualPeriodicityCodelist,
+  );
   const withoutSpatial = dataset.spatials.length === 0;
-  const withSpatialButNotFromRuian = notEmptyAndWithout(dataset.spatials, Codelist.isFromRuianCodelist);
+  const withSpatialButNotFromRuian = notEmptyAndWithout(
+    dataset.spatials,
+    Codelist.isFromRuianCodelist,
+  );
   const withoutTheme = dataset.themes.length === 0;
-  const withThemeButNotFromEurovoc = notEmptyAndWithout(dataset.themes, Codelist.isEurovocTheme);
+  const withThemeButNotFromEurovoc = notEmptyAndWithout(
+    dataset.themes,
+    Codelist.isEurovocTheme,
+  );
   const withoutKeyword = dataset.keywords.length === 0;
-  const withKeywordButNotCzech = notEmptyAndWithout(dataset.keywords, hasCzechValue);
+  const withKeywordButNotCzech = notEmptyAndWithout(
+    dataset.keywords,
+    hasCzechValue,
+  );
   const distributions = dataset.distributions.map(createDistribution);
-  const highValue = Loader.isHvdDataset(dataset) ? createHighValueDataset(dataset) : null;
-  const datasetSeries = dataset.hasDatasetSeriesClass ? createDatasetSeries() : null;
+  const highValue = Loader.isHvdDataset(dataset)
+    ? createHighValueDataset(dataset)
+    : null;
+  const datasetSeries = dataset.hasDatasetSeriesClass
+    ? createDatasetSeries()
+    : null;
   //
   return populateDatasetEntrySectionIssues({
     accessUrl: entry.url,
@@ -215,7 +258,8 @@ function createDataset(entry: Loader.DatasetEntryPoint, dataset: Loader.Dataset)
     withoutPublisher,
     withPublisherButNotOvm,
     withoutAccrualPeriodicity,
-    withAccrualPeriodicityButNotFromEurovoc: withAccrualPeriodicityButNotEurovoc,
+    withAccrualPeriodicityButNotFromEurovoc:
+      withAccrualPeriodicityButNotEurovoc,
     withoutSpatial,
     withSpatialButNotFromRuian,
     withoutTheme,
@@ -229,9 +273,14 @@ function createDataset(entry: Loader.DatasetEntryPoint, dataset: Loader.Dataset)
   });
 }
 
-function createHighValueDataset(report: Loader.HvdDataset): Model.HighValueDataset {
+function createHighValueDataset(
+  report: Loader.HvdDataset,
+): Model.HighValueDataset {
   const withoutHvdCategory = report.hvdCategories.length === 0;
-  const withHvdTopCategory = includes(report.hvdCategories, Codelist.isTopHvdCategory);
+  const withHvdTopCategory = includes(
+    report.hvdCategories,
+    Codelist.isTopHvdCategory,
+  );
   return {
     withoutHvdCategory,
     withHvdTopCategory,
@@ -243,7 +292,9 @@ function createDatasetSeries(): Model.DatasetSeries {
   return {};
 }
 
-function populateDatasetEntrySectionIssues(dataset: Model.Dataset): Model.Dataset {
+function populateDatasetEntrySectionIssues(
+  dataset: Model.Dataset,
+): Model.Dataset {
   const issues: Model.Issue[] = [...dataset.issues];
 
   if (dataset.withoutType) {
@@ -392,7 +443,7 @@ function createDistribution(report: Loader.Distribution): Model.Distribution {
     iri: report.url,
     withoutAccessURL,
     withoutTermsOfUse,
-    issues: []
+    issues: [],
   });
   if (Loader.isDataServiceDistribution(report)) {
     return expandToDataServiceDistribution(distribution, report);
@@ -404,7 +455,9 @@ function createDistribution(report: Loader.Distribution): Model.Distribution {
   }
 }
 
-function populateDistributionIssues(distribution: Model.Distribution): Model.Distribution {
+function populateDistributionIssues(
+  distribution: Model.Distribution,
+): Model.Distribution {
   const issues: Model.Issue[] = [...distribution.issues];
 
   if (distribution.withoutAccessURL) {
@@ -425,14 +478,19 @@ function populateDistributionIssues(distribution: Model.Distribution): Model.Dis
 
   return {
     ...distribution,
-    issues
-  }
+    issues,
+  };
 }
 
-function expandToDataServiceDistribution(distribution: Model.Distribution, report: Loader.DataServiceDistribution): Model.DataServiceDistribution {
+function expandToDataServiceDistribution(
+  distribution: Model.Distribution,
+  report: Loader.DataServiceDistribution,
+): Model.DataServiceDistribution {
   const withoutCzechTitle = !hasCzechValue(report.title);
   const withoutEndpointURL = report.endpointURL.length === 0;
-  const highValue = report.isHighValue ? createHighValueDataServiceDistribution(report) : null;
+  const highValue = report.isHighValue
+    ? createHighValueDataServiceDistribution(report)
+    : null;
   //
   return populateDataServiceDistributionIssues({
     ...distribution,
@@ -443,7 +501,9 @@ function expandToDataServiceDistribution(distribution: Model.Distribution, repor
   });
 }
 
-function populateDataServiceDistributionIssues(dataService: Model.DataServiceDistribution): Model.DataServiceDistribution {
+function populateDataServiceDistributionIssues(
+  dataService: Model.DataServiceDistribution,
+): Model.DataServiceDistribution {
   const issues: Model.Issue[] = [...dataService.issues];
 
   if (dataService.withoutCzechTitle) {
@@ -463,7 +523,6 @@ function populateDataServiceDistributionIssues(dataService: Model.DataServiceDis
   }
 
   if (dataService.highValue) {
-
     if (dataService.highValue.withoutHvdCategory) {
       issues.push({
         level: Model.Level.ERROR,
@@ -495,18 +554,22 @@ function populateDataServiceDistributionIssues(dataService: Model.DataServiceDis
         args: { "data-service": dataService.iri },
       });
     }
-
   }
 
   return {
     ...dataService,
-    issues
-  }
+    issues,
+  };
 }
 
-function createHighValueDataServiceDistribution(report: Loader.DataServiceDistribution): Model.HighValueDataServiceDistribution {
+function createHighValueDataServiceDistribution(
+  report: Loader.DataServiceDistribution,
+): Model.HighValueDataServiceDistribution {
   const withoutHvdCategory = report.hvdCategories.length === 0;
-  const withHvdTopCategory = includes(report.hvdCategories, Codelist.isTopHvdCategory);
+  const withHvdTopCategory = includes(
+    report.hvdCategories,
+    Codelist.isTopHvdCategory,
+  );
   const withoutContactPoint = report.contactPoints.length === 0;
   const withoutPage = report.pages.length === 0;
   //
@@ -518,13 +581,24 @@ function createHighValueDataServiceDistribution(report: Loader.DataServiceDistri
   };
 }
 
-function expandToFileDistribution(distribution: Model.Distribution, report: Loader.FileDistribution): Model.FileDistribution {
+function expandToFileDistribution(
+  distribution: Model.Distribution,
+  report: Loader.FileDistribution,
+): Model.FileDistribution {
   const withoutDownloadURL = report.downloadURLs.length === 0;
   const withoutMediaTypes = report.mediaTypes.length === 0;
-  const withMediaTypeButNotFromCodelist = notEmptyAndWithout(report.mediaTypes, Codelist.isFromMediaTypeCodelist);
+  const withMediaTypeButNotFromCodelist = notEmptyAndWithout(
+    report.mediaTypes,
+    Codelist.isFromMediaTypeCodelist,
+  );
   const withoutFormat = report.formats.length === 0;
-  const withFormatButNotFromCodelist = notEmptyAndWithout(report.formats, Codelist.isFromFormatCodelist);
-  const highValue = report.isHighValue ? createHighValueFileDistribution() : null;
+  const withFormatButNotFromCodelist = notEmptyAndWithout(
+    report.formats,
+    Codelist.isFromFormatCodelist,
+  );
+  const highValue = report.isHighValue
+    ? createHighValueFileDistribution()
+    : null;
   //
   return {
     ...distribution,
@@ -548,7 +622,8 @@ function createSummary(
   entries: Model.DatasetReference[],
 ): Model.Summary {
   const entryPoint = report.catalog.entryPoint;
-  const contentType = entryPoint.contentType ?? entryPoint.contentTypeFromUrl ?? null;
+  const contentType =
+    entryPoint.contentType ?? entryPoint.contentTypeFromUrl ?? null;
   const isContentTypeFromExtension = entryPoint.contentType === null;
   const isInvalidByShacl = entryPoint.validByShacl === false;
   let isInvalidByJsonSchema: boolean | null = null;
@@ -565,9 +640,7 @@ function createSummary(
     .filter(entry => Model.includesErrorOrHigher(entry.issues))
     .map(entry => entry.accessUrl);
 
-  const allFoundDatasets = entries
-    .map(entry => entry.datasets)
-    .flat(1);
+  const allFoundDatasets = entries.map(entry => entry.datasets).flat(1);
 
   const datasetsWithError = allFoundDatasets
     .filter(dataset => Model.includesErrorOrHigher(dataset.issues))
@@ -661,6 +734,6 @@ function populateSummaryIssues(summary: Model.Summary): Model.Summary {
 
   return {
     ...summary,
-    issues
+    issues,
   };
 }

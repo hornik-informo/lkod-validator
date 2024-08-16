@@ -40,7 +40,7 @@ export function Application() {
           mode: prefersDarkMode ? "dark" : "light",
         },
       }),
-    [prefersDarkMode]
+    [prefersDarkMode],
   );
   return (
     <ThemeProvider theme={theme}>

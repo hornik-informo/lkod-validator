@@ -11,13 +11,15 @@ import { LocalCatalogReport } from "./catalog-report/catalog-report";
 /**
  * Display results of the validation.
  */
-export function ReportSection({ report }: {
-  report: Report.LocalCatalogReport,
+export function ReportSection({
+  report,
+}: {
+  report: Report.LocalCatalogReport;
 }) {
   let content: React.ReactNode;
   if (report.loadingFailure?.conversionToRdfFailed === true) {
     content = <CanNotConvertToRdf report={report} />;
-  } else if (report.loadingFailure?.failedToFetchData === true)  {
+  } else if (report.loadingFailure?.failedToFetchData === true) {
     content = <CanNotFetchData report={report} />;
   } else if (report.summary.contentType === null) {
     content = <CanNotDetermineContentType report={report} />;
@@ -25,9 +27,5 @@ export function ReportSection({ report }: {
     content = <LocalCatalogReport report={report} />;
   }
 
-  return (
-    <Box sx={{ my: "1rem" }}>
-      {content}
-    </Box>
-  );
+  return <Box sx={{ my: "1rem" }}>{content}</Box>;
 }

@@ -6,7 +6,9 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 
 import { Report } from "../validator-service";
 
-export function CanNotConvertToRdf(props: { report: Report.LocalCatalogReport }) {
+export function CanNotConvertToRdf(props: {
+  report: Report.LocalCatalogReport;
+}) {
   const { t } = useTranslation();
 
   return (

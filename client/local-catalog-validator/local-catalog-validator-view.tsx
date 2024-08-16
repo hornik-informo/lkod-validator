@@ -24,8 +24,9 @@ export function LocalCatalogValidatorView() {
         message={validationService.statusMessage}
         args={validationService.statusArgs}
       />
-      {validationService.report === null ? null :
-        <ReportSection report={validationService.report} />}
+      {validationService.report === null ? null : (
+        <ReportSection report={validationService.report} />
+      )}
     </>
   );
 }

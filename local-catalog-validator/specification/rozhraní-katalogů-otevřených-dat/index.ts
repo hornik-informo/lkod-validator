@@ -7,7 +7,7 @@ export const OpenDataCatalogs20250428 = [
   HighValueDatasetJsonSchema,
   DatasetJsonSchema,
   DatasetSeriesJsonSchema,
-  Catalog
+  Catalog,
 ];
 
 export const HVD_JSON_SCHEMA_ID = HighValueDatasetJsonSchema["$id"];

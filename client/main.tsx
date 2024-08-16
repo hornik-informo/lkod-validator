@@ -7,5 +7,5 @@ const element = document.getElementById("application") as HTMLElement;
 ReactDOM.createRoot(element).render(
   <React.StrictMode>
     <Application />
-  </React.StrictMode>
+  </React.StrictMode>,
 );

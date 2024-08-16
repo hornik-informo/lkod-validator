@@ -4,9 +4,7 @@ import react from "@vitejs/plugin-react";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-  ],
+  plugins: [react()],
   base: "./",
   build: {
     rollupOptions: {
@@ -17,17 +15,14 @@ export default defineConfig({
             "react-dom",
             "react-i18next",
             "react-is",
-            "react/jsx-runtime"
+            "react/jsx-runtime",
           ],
           i18next: [
             "i18next",
             "i18next-browser-languagedetector",
-            "i18next-http-backend"
+            "i18next-http-backend",
           ],
-          mui: [
-            "@mui/material",
-            "@mui/icons-material"
-          ],
+          mui: ["@mui/material", "@mui/icons-material"],
           rdf: [
             "@rdfjs/data-model",
             "fetch-sparql-endpoint",

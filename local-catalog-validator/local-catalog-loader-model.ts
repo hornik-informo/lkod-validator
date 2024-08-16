@@ -1,37 +1,30 @@
 import { type ContentType } from "../service/content-type";
 
 export interface LocalCatalog {
-
   catalog: CatalogWrap;
 
   datasets: DatasetWrap[];
-
 }
 
 /**
  * Pair access data and catalog information.
  */
 export interface CatalogWrap {
-
   entryPoint: CatalogEntryPoint;
 
   /**
    * There can be multiple catalogs stored under given URL.
    */
   catalogs: Catalog[];
-
 }
 
 export interface CatalogEntryPoint extends RdfEntryPoint {
-
   isJsonFormat: boolean;
 
   validByShacl: boolean | null;
-
 }
 
 export interface RdfEntryPoint {
-
   /**
    * URL to access the given resource.
    * The URL may accessed directly or used as a part of a query, e.g. SPARQL.
@@ -73,11 +66,9 @@ export interface RdfEntryPoint {
    * True when conversion to RDF failed.
    */
   conversionToRdfFailed: boolean | null;
-
 }
 
 export interface JsonCatalogEntryPoint extends CatalogEntryPoint {
-
   isJsonFormat: true;
 
   /**
@@ -89,15 +80,15 @@ export interface JsonCatalogEntryPoint extends CatalogEntryPoint {
    * True when API is not valid by JSON schema and it looks like CKAN API.
    */
   canBeCkanApi: boolean;
-
 }
 
-export const isJsonCatalogEntryPoint = (entryPoint: CatalogEntryPoint): entryPoint is JsonCatalogEntryPoint => {
+export const isJsonCatalogEntryPoint = (
+  entryPoint: CatalogEntryPoint,
+): entryPoint is JsonCatalogEntryPoint => {
   return entryPoint.isJsonFormat === true;
-}
+};
 
 export interface Catalog {
-
   /**
    * Detected catalog URLs.
    */
@@ -121,37 +112,29 @@ export interface Catalog {
   /**
    * There canbe multiple publishers..
    */
-  publishers: Publisher[]
-
+  publishers: Publisher[];
 }
 
 export type LanguageString = { [language: string]: string };
 
 export interface Publisher {
-
   url: string;
-
 }
 
 /**
  * Pair access data and dataset information.
  */
 export interface DatasetWrap {
-
   entryPoint: DatasetEntryPoint;
 
   datasets: Dataset[];
-
 }
 
 export interface DatasetEntryPoint extends RdfEntryPoint {
-
   isJsonFormat: boolean;
-
 }
 
 export interface JsonDatasetEntryPoint extends DatasetEntryPoint {
-
   isJsonFormat: true;
 
   /**
@@ -168,15 +151,15 @@ export interface JsonDatasetEntryPoint extends DatasetEntryPoint {
    * True if document pass validation using series JSON schema.
    */
   validBySeriesJsonSchema: boolean | null;
-
 }
 
-export const isJsonDatasetEntryPoint = (entryPoint: DatasetEntryPoint): entryPoint is JsonDatasetEntryPoint => {
+export const isJsonDatasetEntryPoint = (
+  entryPoint: DatasetEntryPoint,
+): entryPoint is JsonDatasetEntryPoint => {
   return entryPoint.isJsonFormat === true;
-}
+};
 
 export interface Dataset {
-
   /**
    * Dataset URL as loaded from the data.
    */
@@ -213,23 +196,19 @@ export interface Dataset {
   inSeries: string[];
 
   isHighValue: boolean;
-
 }
 
 export interface HvdDataset extends Dataset {
-
   isHighValue: true;
 
   hvdCategories: string[];
-
 }
 
 export const isHvdDataset = (dataset: Dataset): dataset is HvdDataset => {
   return dataset.isHighValue === true;
-}
+};
 
 export interface Distribution {
-
   url: string;
 
   accessURLs: string[];
@@ -243,11 +222,9 @@ export interface Distribution {
   isDataServiceDistribution: boolean;
 
   isFileDistribution: boolean;
-
 }
 
 export interface DataServiceDistribution extends Distribution {
-
   isDataServiceDistribution: true;
 
   title: LanguageString | null;
@@ -259,15 +236,15 @@ export interface DataServiceDistribution extends Distribution {
   pages: string[];
 
   hvdCategories: string[];
-
 }
 
-export const isDataServiceDistribution = (distribution: Distribution): distribution is DataServiceDistribution => {
+export const isDataServiceDistribution = (
+  distribution: Distribution,
+): distribution is DataServiceDistribution => {
   return distribution.isDataServiceDistribution === true;
-}
+};
 
 export interface FileDistribution extends Distribution {
-
   isFileDistribution: true;
 
   downloadURLs: string[];
@@ -275,9 +252,10 @@ export interface FileDistribution extends Distribution {
   mediaTypes: string[];
 
   formats: string[];
-
 }
 
-export const isFileDistribution = (distribution: Distribution): distribution is FileDistribution => {
+export const isFileDistribution = (
+  distribution: Distribution,
+): distribution is FileDistribution => {
   return distribution.isFileDistribution === true;
-}
+};

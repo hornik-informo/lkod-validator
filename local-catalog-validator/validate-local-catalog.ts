@@ -5,13 +5,18 @@ import { createFetchService } from "../service/fetch";
 import { createJsonSchemaService } from "../service/json-schema";
 import { createNoOpLogger } from "../service/logger";
 
-import { loadSchemasToJsonSchemaService, LocalCatalogLoader } from "./local-catalog-loader";
+import {
+  loadSchemasToJsonSchemaService,
+  LocalCatalogLoader,
+} from "./local-catalog-loader";
 import { createLocalCatalogReport } from "./local-catalog-validator";
 
 await (async function main() {
   // Use last argument as the URL.
   if (process.argv.length !== 3) {
-    console.log("Please read instrcutions in the readme file on how to use this command.")
+    console.log(
+      "Please read instrcutions in the readme file on how to use this command.",
+    );
     return;
   }
 
@@ -21,7 +26,11 @@ await (async function main() {
   loadSchemasToJsonSchemaService(jsonSchemaService);
   const logger = createNoOpLogger();
 
-  const loader = new LocalCatalogLoader(fetchService, jsonSchemaService, logger);
+  const loader = new LocalCatalogLoader(
+    fetchService,
+    jsonSchemaService,
+    logger,
+  );
   const localCatalog = await loader.load(url);
 
   const report = createLocalCatalogReport(localCatalog);
@@ -36,7 +45,7 @@ await (async function main() {
         delete (distribution as any).issues;
       });
     });
-  })
+  });
 
   console.log(JSON.stringify(report, null, 2));
 })();

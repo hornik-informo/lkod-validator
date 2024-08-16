@@ -2,7 +2,11 @@ import * as RDF from "@rdfjs/types";
 
 import { type FetchService } from "../service/fetch";
 import { type JsonSchemaService } from "../service/json-schema";
-import { detectContentType, ContentType, detectContentTypeWithoutSparql } from "../service/content-type";
+import {
+  detectContentType,
+  ContentType,
+  detectContentTypeWithoutSparql,
+} from "../service/content-type";
 import { jsonLdToRdf, streamN3ToRdf } from "../service/rdf";
 import { validateWithShacl } from "../service/shacl";
 import { type Logger } from "../service/logger";
@@ -27,7 +31,9 @@ import { CommonDataTypes20200701 } from "./specification/základní-datové-typy
  * This method should be called only once.
  * It adds all local schemas to the validation service.
  */
-export function loadSchemasToJsonSchemaService(jsonSchema: JsonSchemaService): void {
+export function loadSchemasToJsonSchemaService(
+  jsonSchema: JsonSchemaService,
+): void {
   const schemas = [...OpenDataCatalogs20250428, ...CommonDataTypes20200701];
   for (const schema of schemas) {
     jsonSchema.addJsonSchema(schema);
@@ -39,14 +45,17 @@ export function loadSchemasToJsonSchemaService(jsonSchema: JsonSchemaService): v
  * like JSON schema and SHACL.
  */
 export class LocalCatalogLoader {
-
   private readonly fetchService: FetchService;
 
   private readonly jsonSchema: JsonSchemaService;
 
   private readonly logger: Logger;
 
-  constructor(fetchService: FetchService, jsonSchema: JsonSchemaService, logger: Logger) {
+  constructor(
+    fetchService: FetchService,
+    jsonSchema: JsonSchemaService,
+    logger: Logger,
+  ) {
     this.fetchService = fetchService;
     this.jsonSchema = jsonSchema;
     this.logger = logger;
@@ -54,7 +63,12 @@ export class LocalCatalogLoader {
 
   async load(url: string): Promise<LocalCatalog> {
     // Load entry point.
-    const catalogLoader = new CatalogReader(this.fetchService, this.jsonSchema, this.logger, url);
+    const catalogLoader = new CatalogReader(
+      this.fetchService,
+      this.jsonSchema,
+      this.logger,
+      url,
+    );
     await catalogLoader.load();
     const catalogEntry: Model.CatalogEntryPoint = catalogLoader.report;
     if (catalogLoader.quads === null) {
@@ -81,7 +95,8 @@ export class LocalCatalogLoader {
         this.jsonSchema,
         this.logger,
         catalogEntry,
-        datasetUrl);
+        datasetUrl,
+      );
       await datasetLoader.load();
       if (datasetLoader.quads === null) {
         // There is nothing to load.
@@ -90,7 +105,10 @@ export class LocalCatalogLoader {
           datasets: [],
         });
       } else {
-        const datasetValidator = new DatasetLoader(datasetLoader.quads, datasetUrl);
+        const datasetValidator = new DatasetLoader(
+          datasetLoader.quads,
+          datasetUrl,
+        );
         await datasetValidator.load();
         datasets.push({
           entryPoint: datasetLoader.report,
@@ -117,14 +135,12 @@ export class LocalCatalogLoader {
     }
     return [...result];
   }
-
 }
 
 /**
  * Base class for loading resources.
  */
 abstract class RdfResourceReader {
-
   protected readonly fetchService: FetchService;
 
   quads: RDF.Quad[] | null = null;
@@ -201,7 +217,10 @@ abstract class RdfResourceReader {
   /**
    * Return SPARQL query for loading the resource.
    */
-  protected abstract createSparqlQuery(url: string): { endpoint: string, query: string };
+  protected abstract createSparqlQuery(url: string): {
+    endpoint: string;
+    query: string;
+  };
 
   protected async quadsFromTurtle(entry: Model.RdfEntryPoint): Promise<void> {
     const response = await this.fetchService.httpGetAsStream(entry.url);
@@ -219,7 +238,6 @@ abstract class RdfResourceReader {
       entry.conversionToRdfFailed = true;
     }
   }
-
 }
 
 /**
@@ -227,7 +245,6 @@ abstract class RdfResourceReader {
  * Add special handling for JSON data where we walidate using JSON schema.
  */
 export class CatalogReader extends RdfResourceReader {
-
   private readonly jsonSchema: JsonSchemaService;
 
   private readonly logger: Logger;
@@ -238,7 +255,7 @@ export class CatalogReader extends RdfResourceReader {
     fetchService: FetchService,
     jsonSchema: JsonSchemaService,
     logger: Logger,
-    url: string
+    url: string,
   ) {
     super(fetchService);
     this.jsonSchema = jsonSchema;
@@ -259,7 +276,9 @@ export class CatalogReader extends RdfResourceReader {
   }
 
   async load(): Promise<void> {
-    this.logger.info("logger.loading-catalog-entry-{catalog}", { "catalog": this.report.url });
+    this.logger.info("logger.loading-catalog-entry-{catalog}", {
+      catalog: this.report.url,
+    });
     await super.loadEntry(this.report);
     // Perform additional validation.
     if (this.quads !== null) {
@@ -270,13 +289,18 @@ export class CatalogReader extends RdfResourceReader {
   protected async validateJsonDocument(document: object): Promise<void> {
     this.report.isJsonFormat = true;
     const entry = this.report as Model.JsonCatalogEntryPoint;
-    entry.canBeCkanApi = !entry.validByJsonSchema && this.canBeCkanApi(entry.url, document);
-    entry.validByJsonSchema = await this.jsonSchema.validate(CATALOG_JSON_SCHEMA_ID, document);
+    entry.canBeCkanApi =
+      !entry.validByJsonSchema && this.canBeCkanApi(entry.url, document);
+    entry.validByJsonSchema = await this.jsonSchema.validate(
+      CATALOG_JSON_SCHEMA_ID,
+      document,
+    );
   }
 
   private canBeCkanApi(url: string, content: any) {
     const urlLooksLikeCkan = url.endsWith("/action/package_list");
-    const contentLooksLikeCkan = content["success"] !== undefined && content["result"] !== undefined;
+    const contentLooksLikeCkan =
+      content["success"] !== undefined && content["result"] !== undefined;
     return urlLooksLikeCkan && contentLooksLikeCkan;
   }
 
@@ -306,7 +330,6 @@ CONSTRUCT {
  * Load content of the catalog as quads and create report about the loading.
  */
 export class CatalogLoader {
-
   private readonly quads: RDF.Quad[];
 
   reports: Model.Catalog[] = [];
@@ -337,14 +360,18 @@ export class CatalogLoader {
 
   private async loadCatalog(url: string): Promise<Model.Catalog> {
     const title = selectLanguageString(this.quads, url, Vocabulary.HAS_TITLE);
-    const description = selectLanguageString(this.quads, url, Vocabulary.HAS_DESCRIPTION);
+    const description = selectLanguageString(
+      this.quads,
+      url,
+      Vocabulary.HAS_DESCRIPTION,
+    );
     return {
       url,
       title,
       description,
       publishers: await selectPublishers(this.quads, url),
       datasets: await this.selectDatasets(url),
-    }
+    };
   }
 
   private selectDatasets(url: string): string[] {
@@ -359,8 +386,7 @@ export class CatalogLoader {
       }
     }
     return result;
-  };
-
+  }
 }
 
 /**
@@ -368,9 +394,17 @@ export class CatalogLoader {
  * @param predicate
  * @returns Object with loaded language string.
  */
-function selectLanguageString(quads: RDF.Quad[], url: string, predicate: string): Model.LanguageString {
+function selectLanguageString(
+  quads: RDF.Quad[],
+  url: string,
+  predicate: string,
+): Model.LanguageString {
   const result: Model.LanguageString = {};
-  for (const { subject: { value: s }, predicate: { value: p }, object: o } of quads) {
+  for (const {
+    subject: { value: s },
+    predicate: { value: p },
+    object: o,
+  } of quads) {
     if (s === url && p === predicate) {
       const literal = o as RDF.Literal;
       result[literal?.language] = literal?.value;
@@ -380,21 +414,28 @@ function selectLanguageString(quads: RDF.Quad[], url: string, predicate: string)
 }
 
 function selectPublishers(quads: RDF.Quad[], url: string): Model.Publisher[] {
-  return selectValues(quads, url, Vocabulary.HAS_PUBLISHER)
-    .map(url => ({
-      url,
-    }));
-};
+  return selectValues(quads, url, Vocabulary.HAS_PUBLISHER).map(url => ({
+    url,
+  }));
+}
 
-function selectValues(quads: RDF.Quad[], url: string, predicate: string): string[] {
+function selectValues(
+  quads: RDF.Quad[],
+  url: string,
+  predicate: string,
+): string[] {
   const result: string[] = [];
-  for (const { subject: { value: s }, predicate: { value: p }, object: { value: o } } of quads) {
+  for (const {
+    subject: { value: s },
+    predicate: { value: p },
+    object: { value: o },
+  } of quads) {
     if (s === url && p === predicate) {
       result.push(o);
     }
   }
   return result;
-};
+}
 
 /**
  * Customized loader for dataset.
@@ -402,7 +443,6 @@ function selectValues(quads: RDF.Quad[], url: string, predicate: string): string
  * We validate JSON documents using JSON-schema.
  */
 export class DatasetReader extends RdfResourceReader {
-
   private readonly jsonSchema: JsonSchemaService;
 
   private readonly logger: Logger;
@@ -416,7 +456,7 @@ export class DatasetReader extends RdfResourceReader {
     jsonSchema: JsonSchemaService,
     logger: Logger,
     catalogEntryPoint: Model.CatalogEntryPoint,
-    url: string
+    url: string,
   ) {
     super(fetchService);
     this.jsonSchema = jsonSchema;
@@ -437,7 +477,9 @@ export class DatasetReader extends RdfResourceReader {
   }
 
   async load(): Promise<void> {
-    this.logger.info("logger.loading-dataset-entry-{dataset}", { "dataset": this.report.url });
+    this.logger.info("logger.loading-dataset-entry-{dataset}", {
+      dataset: this.report.url,
+    });
     await super.loadEntry(this.report);
   }
 
@@ -446,7 +488,10 @@ export class DatasetReader extends RdfResourceReader {
     if (this.catalogEntryPoint.contentType === ContentType.SPARQL) {
       entry.contentType = ContentType.SPARQL;
     } else {
-      const contentType = await detectContentTypeWithoutSparql(this.fetchService, entry.url);
+      const contentType = await detectContentTypeWithoutSparql(
+        this.fetchService,
+        entry.url,
+      );
       entry.contentType = contentType.contentType;
       entry.headerContentType = contentType.rawHeaderContentType;
       entry.contentTypeStatusCode = contentType.statusCode;
@@ -464,15 +509,27 @@ export class DatasetReader extends RdfResourceReader {
     // using distinct features.
     if (document["typ"] === "Datová sada") {
       // Validate as dataset.
-      entry.validByDatasetJsonSchema = await this.jsonSchema.validate(DATASET_JSON_SCHEMA_ID, document);
+      entry.validByDatasetJsonSchema = await this.jsonSchema.validate(
+        DATASET_JSON_SCHEMA_ID,
+        document,
+      );
       // But also check as it can be HVD.
       const legal = document["právní_předpis"] ?? null;
-      if (Array.isArray(legal) && legal.findIndex(Codelist.isApplicableLegislationHvd) !== -1) {
-        entry.validByHvdJsonSchema = await this.jsonSchema.validate(HVD_JSON_SCHEMA_ID, document);
+      if (
+        Array.isArray(legal) &&
+        legal.findIndex(Codelist.isApplicableLegislationHvd) !== -1
+      ) {
+        entry.validByHvdJsonSchema = await this.jsonSchema.validate(
+          HVD_JSON_SCHEMA_ID,
+          document,
+        );
       }
     }
     if (document["typ"] === "Datová série") {
-      entry.validBySeriesJsonSchema = await this.jsonSchema.validate(SERIES_JSON_SCHEMA_ID, document);
+      entry.validBySeriesJsonSchema = await this.jsonSchema.validate(
+        SERIES_JSON_SCHEMA_ID,
+        document,
+      );
     }
   }
 
@@ -514,11 +571,9 @@ export class DatasetReader extends RdfResourceReader {
       query,
     };
   }
-
 }
 
 export class DatasetLoader {
-
   private readonly quads: RDF.Quad[];
 
   reports: Model.Dataset[] = [];
@@ -542,7 +597,11 @@ export class DatasetLoader {
 
   private selectDatasets(): string[] {
     const result: string[] = [];
-    for (const { subject: { value: s }, predicate: { value: p }, object: { value: o } } of this.quads) {
+    for (const {
+      subject: { value: s },
+      predicate: { value: p },
+      object: { value: o },
+    } of this.quads) {
       if (p === Vocabulary.TYPE && o === Vocabulary.DATASET) {
         result.push(s);
       }
@@ -553,14 +612,34 @@ export class DatasetLoader {
   private loadDataset(url: string): Model.Dataset {
     const types = selectValues(this.quads, url, Vocabulary.TYPE);
     const title = selectLanguageString(this.quads, url, Vocabulary.HAS_TITLE);
-    const description = selectLanguageString(this.quads, url, Vocabulary.HAS_DESCRIPTION);
-    const keywords = selectLanguageStringAsArray(this.quads, url, Vocabulary.HAS_KEYWORD);
+    const description = selectLanguageString(
+      this.quads,
+      url,
+      Vocabulary.HAS_DESCRIPTION,
+    );
+    const keywords = selectLanguageStringAsArray(
+      this.quads,
+      url,
+      Vocabulary.HAS_KEYWORD,
+    );
     const themes = selectValues(this.quads, url, Vocabulary.HAS_THEME);
-    const accrualPeriodicities = selectValues(this.quads, url, Vocabulary.HAS_ACCRUAL_PERIODICITY);
+    const accrualPeriodicities = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_ACCRUAL_PERIODICITY,
+    );
     const spatials = selectValues(this.quads, url, Vocabulary.HAS_SPATIAL);
-    const applicableLegislations = selectValues(this.quads, url, Vocabulary.HAS_APPLICABLE_LEGISLATION);
+    const applicableLegislations = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_APPLICABLE_LEGISLATION,
+    );
     const inSeries = selectValues(this.quads, url, Vocabulary.HAS_IN_SERIES);
-    const distributions = selectValues(this.quads, url, Vocabulary.HAS_DISTRIBUTION);
+    const distributions = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_DISTRIBUTION,
+    );
 
     const report: Model.Dataset = {
       url,
@@ -579,7 +658,9 @@ export class DatasetLoader {
       isHighValue: false,
     };
 
-    const isHvdDataset = applicableLegislations.findIndex(Codelist.isApplicableLegislationHvd) !== -1;
+    const isHvdDataset =
+      applicableLegislations.findIndex(Codelist.isApplicableLegislationHvd) !==
+      -1;
     if (isHvdDataset) {
       // Perform additional validation.
       return this.loadHighValueDataset(report);
@@ -589,16 +670,31 @@ export class DatasetLoader {
   }
 
   private loadDistribution(url: string): Model.Distribution {
-    const termsOfUse = selectValues(this.quads, url, Vocabulary.HAS_TERMS_OF_USE);
-    const applicableLegislations = selectValues(this.quads, url, Vocabulary.HAS_APPLICABLE_LEGISLATION);
-    const accessService = selectValues(this.quads, url, Vocabulary.HAS_ACCESS_SERVICE);
+    const termsOfUse = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_TERMS_OF_USE,
+    );
+    const applicableLegislations = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_APPLICABLE_LEGISLATION,
+    );
+    const accessService = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_ACCESS_SERVICE,
+    );
 
     const report: Model.Distribution = {
       url,
       accessURLs: selectValues(this.quads, url, Vocabulary.HAS_ACCESS_URL),
       termsOfUse,
       applicableLegislations,
-      isHighValue: applicableLegislations.findIndex(Codelist.isApplicableLegislationHvd) !== -1,
+      isHighValue:
+        applicableLegislations.findIndex(
+          Codelist.isApplicableLegislationHvd,
+        ) !== -1,
       isDataServiceDistribution: false,
       isFileDistribution: false,
     };
@@ -611,45 +707,80 @@ export class DatasetLoader {
     }
   }
 
-  private loadFileDistribution(distribution: Model.Distribution): Model.FileDistribution {
+  private loadFileDistribution(
+    distribution: Model.Distribution,
+  ): Model.FileDistribution {
     const url = distribution.url;
     const result = distribution as Model.FileDistribution;
     result.isFileDistribution = true;
-    result.downloadURLs = selectValues(this.quads, url, Vocabulary.HAS_DOWNLOAD);
-    result.mediaTypes = selectValues(this.quads, url, Vocabulary.HAS_MEDIA_TYPE);
+    result.downloadURLs = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_DOWNLOAD,
+    );
+    result.mediaTypes = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_MEDIA_TYPE,
+    );
     result.formats = selectValues(this.quads, url, Vocabulary.HAS_FORMAT);
     return result;
   }
 
-  private loadDataServiceDistribution(distribution: Model.Distribution): Model.DataServiceDistribution {
+  private loadDataServiceDistribution(
+    distribution: Model.Distribution,
+  ): Model.DataServiceDistribution {
     // We are no longer loading from the distribution.
     const url = distribution.accessURLs[0];
     const result = distribution as Model.DataServiceDistribution;
     result.isDataServiceDistribution = true;
     result.title = selectLanguageString(this.quads, url, Vocabulary.HAS_TITLE);
-    result.endpointURL = selectValues(this.quads, url, Vocabulary.HAS_ENDPOINT_URL);
-    result.contactPoints = selectValues(this.quads, url, Vocabulary.HAS_CONTACT_POINT);
+    result.endpointURL = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_ENDPOINT_URL,
+    );
+    result.contactPoints = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_CONTACT_POINT,
+    );
     result.pages = selectValues(this.quads, url, Vocabulary.HAS_PAGE);
-    result.hvdCategories = selectValues(this.quads, url, Vocabulary.HAS_HVD_CATEGORY);
+    result.hvdCategories = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_HVD_CATEGORY,
+    );
     return result;
   }
 
   private loadHighValueDataset(initialReport: Model.Dataset): Model.HvdDataset {
     const url = initialReport.url;
-    const hvdCategories = selectValues(this.quads, url, Vocabulary.HAS_HVD_CATEGORY);
+    const hvdCategories = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_HVD_CATEGORY,
+    );
     const report: Model.HvdDataset = {
       ...initialReport,
       isHighValue: true,
       hvdCategories,
     };
-    return report
+    return report;
   }
-
 }
 
-function selectLanguageStringAsArray(quads: RDF.Quad[], url: string, predicate: string): Model.LanguageString[] {
+function selectLanguageStringAsArray(
+  quads: RDF.Quad[],
+  url: string,
+  predicate: string,
+): Model.LanguageString[] {
   const result: Model.LanguageString[] = [];
-  for (const { subject: { value: s }, predicate: { value: p }, object: o } of quads) {
+  for (const {
+    subject: { value: s },
+    predicate: { value: p },
+    object: o,
+  } of quads) {
     if (s === url && p === predicate) {
       const literal = o as RDF.Literal;
       result.push({ [literal?.language]: literal?.value });

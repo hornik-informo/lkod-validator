@@ -3,7 +3,10 @@ import React from "react";
 /**
  * Render definition list with given title and values.
  */
-export function DefinitionList(props: { title: string, values: string | string[] | null }) {
+export function DefinitionList(props: {
+  title: string;
+  values: string | string[] | null;
+}) {
   if (props.values === null) {
     return null;
   }
@@ -14,7 +17,9 @@ export function DefinitionList(props: { title: string, values: string | string[]
   return (
     <>
       <dt>{props.title}</dt>
-      {values.map(item => <dd key={item}> {item} </dd>)}
+      {values.map(item => (
+        <dd key={item}> {item} </dd>
+      ))}
     </>
   );
 }

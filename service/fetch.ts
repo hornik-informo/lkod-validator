@@ -3,31 +3,28 @@ import * as RDF from "@rdfjs/types";
 import { SparqlEndpointFetcher } from "fetch-sparql-endpoint";
 
 export interface FetchService {
-
   sparqlAsk(endpoint: string, query: string): Promise<boolean>;
 
-  sparqlConstruct(endpoint: string, query: string): Promise<RDF.Quad[]>
+  sparqlConstruct(endpoint: string, query: string): Promise<RDF.Quad[]>;
 
   httpGet(url: string): Promise<HttpResponse<Response>>;
 
   httpGetAsJson(url: string): Promise<HttpResponse<object>>;
 
-  httpGetAsStream(url: string): Promise<HttpResponse<ReadableStream<Uint8Array>>>;
-
+  httpGetAsStream(
+    url: string,
+  ): Promise<HttpResponse<ReadableStream<Uint8Array>>>;
 }
 
 export interface HttpResponse<T> {
-
   payload: T | null;
 
   statusCode: number | null;
-
 }
 
 export const createFetchService = () => new DefaultFetchService();
 
 class DefaultFetchService implements FetchService {
-
   private sparqlFetcher: SparqlEndpointFetcher;
 
   constructor() {
@@ -39,7 +36,10 @@ class DefaultFetchService implements FetchService {
   }
 
   async sparqlConstruct(endpoint: string, query: string): Promise<RDF.Quad[]> {
-    const bindingsStream = await this.sparqlFetcher.fetchTriples(endpoint, query);
+    const bindingsStream = await this.sparqlFetcher.fetchTriples(
+      endpoint,
+      query,
+    );
     return new Promise((accept, reject) => {
       const collector: RDF.Quad[] = [];
       bindingsStream.on("data", binding => collector.push(binding));
@@ -56,18 +56,18 @@ class DefaultFetchService implements FetchService {
       return {
         payload: null,
         statusCode: null,
-      }
+      };
     }
     if (!response.ok) {
       return {
         payload: response,
         statusCode: response.status,
-      }
+      };
     }
     return {
       payload: response,
       statusCode: response.status,
-    }
+    };
   }
 
   async httpGetAsJson(url: string): Promise<HttpResponse<object>> {
@@ -81,17 +81,17 @@ class DefaultFetchService implements FetchService {
     let payload = null;
     try {
       payload = await response.payload.json();
-    } catch (error) {
-
-    }
+    } catch (error) {}
 
     return {
       ...response,
       payload,
-    }
+    };
   }
 
-  async httpGetAsStream(url: string): Promise<HttpResponse<ReadableStream<Uint8Array>>> {
+  async httpGetAsStream(
+    url: string,
+  ): Promise<HttpResponse<ReadableStream<Uint8Array>>> {
     const response = await this.httpGet(url);
     if (response.payload === null) {
       return {
@@ -102,7 +102,6 @@ class DefaultFetchService implements FetchService {
     return {
       ...response,
       payload: response.payload.body,
-    }
+    };
   }
-
 }

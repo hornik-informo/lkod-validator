@@ -14,14 +14,16 @@ export interface ShaclWrap {
 /**
  * Given RDF quads return object with ability to perform SHACL validaiton.
  */
-export async function validateWithShacl(content: RDF.Quad[]): Promise<ShaclWrap> {
+export async function validateWithShacl(
+  content: RDF.Quad[],
+): Promise<ShaclWrap> {
   return {
     validate: async (shacl: string) => {
       const shape = await createShape(shacl);
       const validator = new SHACLValidator(shape, { factory });
       const report = await validator.validate(quadsToDataset(content));
       return report.conforms;
-    }
+    },
   };
 }
 
