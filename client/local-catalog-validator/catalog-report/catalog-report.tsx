@@ -333,6 +333,8 @@ function DatasetSection({
   const { t } = useTranslation();
 
   const [open, setOpen] = useState(true);
+  const label =
+    dataset.datasetSeries === null ? t("ui.dataset") : t("ui.dataseries");
 
   return (
     <>
@@ -342,7 +344,7 @@ function DatasetSection({
             sx={{ color: selectLevelColor(dataset.issues, "green") }}
           />
         </ListItemIcon>
-        <ListItemText primary={t("ui.dataset")} secondary={dataset.iri} />
+        <ListItemText primary={label} secondary={dataset.iri} />
         <Box sx={{ mr: "1rem" }}>
           <a href={dataset.accessUrl} target="_blank" rel="noopener noreferrer">
             <OpenInNewIcon />
