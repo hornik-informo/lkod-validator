@@ -21,6 +21,7 @@ import Pagination from "@mui/material/Pagination";
 
 import { Report, ContentType } from "../validator-service";
 import { IssuesList } from "./issues-list";
+import { Height } from "@mui/icons-material";
 
 export function LocalCatalogReport({
   report,
@@ -199,7 +200,11 @@ function Toolbox(props: ToolboxProps) {
 
   return (
     <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <Button variant="outlined" onClick={() => props.setShow(!props.show)}>
+      <Button
+        variant="outlined"
+        onClick={() => props.setShow(!props.show)}
+        style={{ height: "3em" }}
+      >
         {props.show ? t("ui.hide-details") : t("ui.show-details")}
       </Button>
       {props.show ? (

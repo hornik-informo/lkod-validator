@@ -12,6 +12,7 @@ import { useUrlQuery } from "../application/url-query";
 export function InputSection(props: {
   onStartValidation: (url: string) => void;
   disabled: boolean;
+  completed: boolean;
 }) {
   return <InputArea {...props} />;
 }
@@ -19,6 +20,7 @@ export function InputSection(props: {
 const InputArea = (props: {
   onStartValidation: (url: string) => void;
   disabled: boolean;
+  completed: boolean;
 }) => {
   const { t } = useTranslation();
   const urlQuery = useUrlQuery();
@@ -39,9 +41,11 @@ const InputArea = (props: {
       />
       <br /> <br />
       <Button
+        color={props.completed ? "secondary" : "primary"}
         variant="outlined"
         onClick={onSubmit}
         disabled={props.disabled || url === ""}
+        style={{ height: "3em" }}
       >
         {t("ui.submit")}
       </Button>

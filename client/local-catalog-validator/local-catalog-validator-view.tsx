@@ -17,12 +17,15 @@ export function LocalCatalogValidatorView() {
       <IntroductionSection />
       <InputSection
         disabled={validationService.working}
+        completed={validationService.completed}
         onStartValidation={(url: string) => validationService.validate(url)}
       />
       <StatusSection
         working={validationService.working}
         message={validationService.statusMessage}
         args={validationService.statusArgs}
+        total={validationService.progressTotal}
+        actual={validationService.progressActual}
       />
       {validationService.report === null ? null : (
         <ReportSection report={validationService.report} />

@@ -39,6 +39,14 @@ interface State {
    * Validation report;
    */
   report: LocalCatalogReport | null;
+  /**
+   * Total number of dataset resources to process.
+   */
+  progressTotal: number | null;
+  /**
+   * Number of processed dataset resources.
+   */
+  progressActual: number | null;
 }
 
 interface ValidatorServiceType extends State {
@@ -58,6 +66,8 @@ export function useValidatorServiceType(): ValidatorServiceType {
     statusMessage: "",
     statusArgs: undefined,
     report: null,
+    progressTotal: null,
+    progressActual: null,
   });
 
   const validate = (url: string): void => {
@@ -71,6 +81,8 @@ export function useValidatorServiceType(): ValidatorServiceType {
       statusMessage: "",
       statusArgs: undefined,
       report: null,
+      progressTotal: null,
+      progressActual: null,
     });
 
     const consoleLogger = createConsoleLogger();
@@ -88,6 +100,18 @@ export function useValidatorServiceType(): ValidatorServiceType {
             return previous;
           }
         });
+      },
+      startProcessing(total: number): void {
+        setState(previous => ({ ...previous, progressTotal: total }));
+        consoleLogger.startProcessing(total);
+      },
+      updateProcessing(actual: number): void {
+        setState(previous => ({ ...previous, progressActual: actual }));
+        consoleLogger.updateProcessing(actual);
+      },
+      endProcessing(): void {
+        setState(previous => ({ ...previous, progressTotal: null }));
+        consoleLogger.endProcessing();
       },
     };
 

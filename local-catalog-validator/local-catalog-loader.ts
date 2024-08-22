@@ -89,7 +89,11 @@ export class LocalCatalogLoader {
 
     // We process all datasets at once.
     const datasets: Model.DatasetWrap[] = [];
-    for (const datasetUrl of this.collectDatasets(catalogs)) {
+    const collectedDatasets = this.collectDatasets(catalogs);
+    this.logger.startProcessing(collectedDatasets.length);
+    let index = 0;
+    for (const datasetUrl of collectedDatasets) {
+      this.logger.updateProcessing(++index);
       const datasetLoader = new DatasetReader(
         this.fetchService,
         this.jsonSchema,
@@ -116,6 +120,7 @@ export class LocalCatalogLoader {
         });
       }
     }
+    this.logger.endProcessing();
     // Return result.
     return {
       catalog: {
