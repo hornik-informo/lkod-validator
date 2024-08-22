@@ -41,4 +41,7 @@ export const createConsoleLogger = () => new ConsoleLogger();
 
 export const createNoOpLogger = () => ({
   info(message: string, args?: object): void {},
+  startProcessing(total: number): void {},
+  updateProcessing(actual: number): void {},
+  endProcessing(): void {},
 });
