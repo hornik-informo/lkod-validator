@@ -14,7 +14,7 @@ export enum Level {
    */
   WARNING = "warning",
   /**
-   * Error, but it shuld still work.
+   * Error, but it should still work.
    */
   ERROR = "error",
   /**

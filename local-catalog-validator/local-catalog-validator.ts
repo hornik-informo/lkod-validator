@@ -53,7 +53,7 @@ function reportToCatalogs(report: Loader.LocalCatalog): Model.Catalog[] {
 
 /**
  * @param string
- * @returns Value with Czechlanguage.
+ * @returns Value with Czech language.
  */
 function selectCzechValue(string: Loader.LanguageString | null): string | null {
   return string?.["cs"] ?? null;
@@ -248,6 +248,11 @@ function createDataset(
   const datasetSeries = dataset.hasDatasetSeriesClass
     ? createDatasetSeries()
     : null;
+
+  if (dataset.url === "https://micka.cenia.cz/record/turtle/5b7a9ba5-1f34-4aca-a6ec-5c87c0a80138") {
+    console.log("DATASET", dataset);
+  }
+
   //
   return populateDatasetEntrySectionIssues({
     accessUrl: entry.url,
@@ -486,8 +491,8 @@ function expandToDataServiceDistribution(
   distribution: Model.Distribution,
   report: Loader.DataServiceDistribution,
 ): Model.DataServiceDistribution {
-  const withoutCzechTitle = !hasCzechValue(report.title);
-  const withoutEndpointURL = report.endpointURL.length === 0;
+  const withoutCzechTitle = !hasCzechValue(report.dataService.title);
+  const withoutEndpointURL = report.dataService.endpointURL.length === 0;
   const highValue = report.isHighValue
     ? createHighValueDataServiceDistribution(report)
     : null;
@@ -565,13 +570,14 @@ function populateDataServiceDistributionIssues(
 function createHighValueDataServiceDistribution(
   report: Loader.DataServiceDistribution,
 ): Model.HighValueDataServiceDistribution {
-  const withoutHvdCategory = report.hvdCategories.length === 0;
+  const dataService = report.dataService;
+  const withoutHvdCategory = dataService.hvdCategories.length === 0;
   const withHvdTopCategory = includes(
-    report.hvdCategories,
+    dataService.hvdCategories,
     Codelist.isTopHvdCategory,
   );
-  const withoutContactPoint = report.contactPoints.length === 0;
-  const withoutPage = report.pages.length === 0;
+  const withoutContactPoint = dataService.contactPoints.length === 0;
+  const withoutPage = dataService.pages.length === 0;
   //
   return {
     withoutHvdCategory,

@@ -707,7 +707,7 @@ export class DatasetLoader {
       return this.loadFileDistribution(report);
     } else {
       // It is a data service distribution.
-      return this.loadDataServiceDistribution(report);
+      return this.loadDataServiceDistribution(report, accessService);
     }
   }
 
@@ -733,28 +733,45 @@ export class DatasetLoader {
 
   private loadDataServiceDistribution(
     distribution: Model.Distribution,
+    accessServices: string[],
   ): Model.DataServiceDistribution {
-    // We are no longer loading from the distribution.
-    const url = distribution.accessURLs[0];
-    const result = distribution as Model.DataServiceDistribution;
-    result.isDataServiceDistribution = true;
-    result.title = selectLanguageString(this.quads, url, Vocabulary.HAS_TITLE);
-    result.endpointURL = selectValues(
+    // Just use the first one.
+    const url = accessServices[0];
+    const title = selectLanguageString(this.quads, url, Vocabulary.HAS_TITLE);
+    const endpointURL = selectValues(
       this.quads,
       url,
       Vocabulary.HAS_ENDPOINT_URL,
     );
-    result.contactPoints = selectValues(
+    const contactPoints = selectValues(
       this.quads,
       url,
       Vocabulary.HAS_CONTACT_POINT,
     );
-    result.pages = selectValues(this.quads, url, Vocabulary.HAS_PAGE);
-    result.hvdCategories = selectValues(
+    const pages = selectValues(this.quads, url, Vocabulary.HAS_PAGE);
+    const applicableLegislations = selectValues(
+      this.quads,
+      url,
+      Vocabulary.HAS_APPLICABLE_LEGISLATION,
+    );
+    const hvdCategories = selectValues(
       this.quads,
       url,
       Vocabulary.HAS_HVD_CATEGORY,
     );
+    // Turn distribution into DataServiceDistribution.
+    const result = distribution as Model.DataServiceDistribution;
+    result.isDataServiceDistribution = true;
+    result.accessServicesUrl = accessServices;
+    result.dataService = {
+      url,
+      title,
+      endpointURL,
+      contactPoints,
+      pages,
+      applicableLegislations,
+      hvdCategories,
+    };
     return result;
   }
 

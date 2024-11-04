@@ -227,6 +227,24 @@ export interface Distribution {
 export interface DataServiceDistribution extends Distribution {
   isDataServiceDistribution: true;
 
+  accessServicesUrl: string[];
+
+  dataService: DataService;
+}
+
+export const isDataServiceDistribution = (
+  distribution: Distribution,
+): distribution is DataServiceDistribution => {
+  return distribution.isDataServiceDistribution === true;
+};
+
+/**
+ * We extracted properties here as there is a collision
+ * with applicableLegislations od Distribution.
+ */
+export interface DataService {
+  url: string;
+
   title: LanguageString | null;
 
   endpointURL: string[];
@@ -235,14 +253,11 @@ export interface DataServiceDistribution extends Distribution {
 
   pages: string[];
 
-  hvdCategories: string[];
-}
+  applicableLegislations: string[];
 
-export const isDataServiceDistribution = (
-  distribution: Distribution,
-): distribution is DataServiceDistribution => {
-  return distribution.isDataServiceDistribution === true;
-};
+  hvdCategories: string[];
+
+}
 
 export interface FileDistribution extends Distribution {
   isFileDistribution: true;
