@@ -157,7 +157,6 @@ abstract class RdfResourceReader {
   protected async loadEntry(entry: Model.RdfEntryPoint): Promise<void> {
     await this.detectContentType(entry);
     const contentType = entry.contentType ?? entry.contentTypeFromUrl ?? null;
-    console.log("RdfResourceReader", { url: entry.url, contentType });
     if (contentType === null) {
       // There is nothing else we can do at this point.
       return;
