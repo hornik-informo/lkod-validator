@@ -249,10 +249,6 @@ function createDataset(
     ? createDatasetSeries()
     : null;
 
-  if (dataset.url === "https://micka.cenia.cz/record/turtle/5b7a9ba5-1f34-4aca-a6ec-5c87c0a80138") {
-    console.log("DATASET", dataset);
-  }
-
   //
   return populateDatasetEntrySectionIssues({
     accessUrl: entry.url,
@@ -286,9 +282,14 @@ function createHighValueDataset(
     report.hvdCategories,
     Codelist.isTopHvdCategory,
   );
+  // Search for a valid distribution.
+  const hvdDistribution = report.distributions.find((item) => item.isHighValue);
+  const withoutHvdDistribution = hvdDistribution === undefined;
+  //
   return {
     withoutHvdCategory,
     withHvdTopCategory,
+    withoutHvdDistribution,
   };
 }
 
@@ -415,6 +416,12 @@ function populateDatasetEntrySectionIssues(
         args: { dataset: dataset.iri },
       });
     }
+    if (dataset.highValue.withoutHvdDistribution) {
+      issues.push({
+        level: Model.Level.ERROR,
+        payload: "issues.dataset.missing-hvd-distribution-for-hvd-dataset",
+      });
+    }
   }
 
   // Distribution validation is more complex.
@@ -435,6 +442,7 @@ function populateDatasetEntrySectionIssues(
       });
     }
   }
+
   return {
     ...dataset,
     issues,
@@ -500,6 +508,7 @@ function expandToDataServiceDistribution(
   return populateDataServiceDistributionIssues({
     ...distribution,
     isDataServiceDistribution: true,
+    dataServiceIri: report.dataService.url,
     withoutCzechTitle,
     withoutEndpointURL,
     highValue,
@@ -515,24 +524,25 @@ function populateDataServiceDistributionIssues(
     issues.push({
       level: Model.Level.WARNING,
       payload: "issues.data-service.missing-czech-title-{data-service}",
-      args: { "data-service": dataService.iri },
-    });
-  }
-
-  if (dataService.withoutEndpointURL) {
-    issues.push({
-      level: Model.Level.WARNING,
-      payload: "issues.data-service.missing-endpoint-url-{data-service}",
-      args: { "data-service": dataService.iri },
+      args: { "data-service": dataService.dataServiceIri },
     });
   }
 
   if (dataService.highValue) {
+
+    if (dataService.withoutEndpointURL) {
+      issues.push({
+        level: Model.Level.ERROR,
+        payload: "issues.data-service.missing-endpoint-url-{data-service}",
+        args: { "data-service": dataService.dataServiceIri },
+      });
+    }
+
     if (dataService.highValue.withoutHvdCategory) {
       issues.push({
         level: Model.Level.ERROR,
         payload: "issues.data-service.missing-hvd-category-{data-service}",
-        args: { "data-service": dataService.iri },
+        args: { "data-service": dataService.dataServiceIri },
       });
     }
 
@@ -540,7 +550,7 @@ function populateDataServiceDistributionIssues(
       issues.push({
         level: Model.Level.ERROR,
         payload: "issues.data-service.using-hvd-top-category-{data-service}",
-        args: { "data-service": dataService.iri },
+        args: { "data-service": dataService.dataServiceIri },
       });
     }
 
@@ -548,7 +558,7 @@ function populateDataServiceDistributionIssues(
       issues.push({
         level: Model.Level.ERROR,
         payload: "issues.data-service.missing-contact-point-{data-service}",
-        args: { "data-service": dataService.iri },
+        args: { "data-service": dataService.dataServiceIri },
       });
     }
 
@@ -556,9 +566,23 @@ function populateDataServiceDistributionIssues(
       issues.push({
         level: Model.Level.ERROR,
         payload: "issues.data-service.missing-page-{data-service}",
+        args: { "data-service": dataService.dataServiceIri },
+      });
+    }
+
+    /**
+     * We inherit high value flag from the distribution.
+     * Yet we require use of legislation also on the level of a
+     * data service.
+     */
+    if (!dataService.highValue.isHighValue) {
+      issues.push({
+        level: Model.Level.ERROR,
+        payload: "issues.data-service.missing-legislation-for-hvd-{data-service}",
         args: { "data-service": dataService.iri },
       });
     }
+
   }
 
   return {
@@ -580,6 +604,7 @@ function createHighValueDataServiceDistribution(
   const withoutPage = dataService.pages.length === 0;
   //
   return {
+    isHighValue: dataService.isHighValue,
     withoutHvdCategory,
     withHvdTopCategory,
     withoutContactPoint,

@@ -197,7 +197,7 @@ abstract class RdfResourceReader {
       this.quads = await jsonLdToRdf(document);
       entry.conversionToRdfFailed = false;
     } catch (error) {
-      console.error(error);
+      console.error("Conversion to RDF failed.", error);
       entry.conversionToRdfFailed = true;
     }
   }
@@ -759,6 +759,9 @@ export class DatasetLoader {
       url,
       Vocabulary.HAS_HVD_CATEGORY,
     );
+    const isHighValue = applicableLegislations.findIndex(
+      Codelist.isApplicableLegislationHvd,
+    ) !== -1;
     // Turn distribution into DataServiceDistribution.
     const result = distribution as Model.DataServiceDistribution;
     result.isDataServiceDistribution = true;
@@ -771,6 +774,7 @@ export class DatasetLoader {
       pages,
       applicableLegislations,
       hvdCategories,
+      isHighValue,
     };
     return result;
   }

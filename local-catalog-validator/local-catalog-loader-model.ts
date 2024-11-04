@@ -257,6 +257,7 @@ export interface DataService {
 
   hvdCategories: string[];
 
+  isHighValue: boolean;
 }
 
 export interface FileDistribution extends Distribution {

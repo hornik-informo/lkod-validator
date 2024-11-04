@@ -15,7 +15,7 @@ await (async function main() {
   // Use last argument as the URL.
   if (process.argv.length !== 3) {
     console.log(
-      "Please read instrcutions in the readme file on how to use this command.",
+      "Please read instructions in the readme file on how to use this command.",
     );
     return;
   }

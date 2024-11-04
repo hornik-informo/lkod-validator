@@ -19,14 +19,19 @@ import ListItemText from "@mui/material/ListItemText";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Pagination from "@mui/material/Pagination";
 
-import { Report, ContentType } from "../validator-service";
+import {
+  Report,
+  ContentType,
+  UiDataset,
+  UiDatasetReference,
+  UiLocalCatalogReport,
+} from "../validator-service";
 import { IssuesList } from "./issues-list";
-import { Height } from "@mui/icons-material";
 
 export function LocalCatalogReport({
   report,
 }: {
-  report: Report.LocalCatalogReport;
+  report: UiLocalCatalogReport;
 }) {
   return (
     <>
@@ -99,7 +104,7 @@ const PAGE_SIZE = 25;
 function ResourcesSection({
   resources,
 }: {
-  resources: Report.DatasetReference[];
+  resources: UiDatasetReference[];
 }) {
   const { t } = useTranslation();
 
@@ -118,7 +123,7 @@ function ResourcesSection({
     // what to do with the pagination.
     const nextContent: React.ReactElement[] = [];
     for (const resource of resources) {
-      if (filterByLevel(resource, requiredLevel)) {
+      if (filterByLevel(resource.issues, requiredLevel)) {
         nextContent.push(
           <ResourceSection
             key={"resource:" + resource.accessUrl}
@@ -137,7 +142,7 @@ function ResourcesSection({
               dataset={dataset}
             />,
           );
-        } else if (filterByLevel(dataset, requiredLevel)) {
+        } else if (filterByLevel(dataset.allIssues, requiredLevel)) {
           nextContent.push(
             <DatasetSection
               key={"dataset:" + resource.accessUrl + ":" + dataset.iri}
@@ -237,7 +242,7 @@ function Toolbox(props: ToolboxProps) {
  * @returns Initial log level.
  */
 function selectInitialFilterLevel(
-  references: Report.DatasetReference[],
+  references: UiDatasetReference[],
 ): Report.Level {
   let result: Report.Level = Report.Level.INFO;
   for (const reference of references) {
@@ -245,7 +250,7 @@ function selectInitialFilterLevel(
       .map(issue => issue.level)
       .reduce(Report.higherLevel, result);
     for (const dataset of reference.datasets) {
-      result = dataset.issues
+      result = dataset.allIssues
         .map(issue => issue.level)
         .reduce(Report.higherLevel, result);
     }
@@ -254,12 +259,11 @@ function selectInitialFilterLevel(
       return Report.Level.ERROR;
     }
   }
-  console.log("selectInitialFilterLevel", { result });
   return result;
 }
 
 function filterByLevel(
-  { issues }: { issues: Report.Issue[] },
+  issues: Report.Issue[],
   level: Report.Level,
 ): boolean {
   for (const issue of issues) {
@@ -333,7 +337,7 @@ function selectLevelColor(
 function DatasetSection({
   dataset,
 }: {
-  dataset: Report.Dataset;
+  dataset: UiDataset;
 }): React.ReactElement {
   const { t } = useTranslation();
 
@@ -346,7 +350,7 @@ function DatasetSection({
       <ListItem>
         <ListItemIcon>
           <FolderIcon
-            sx={{ color: selectLevelColor(dataset.issues, "green") }}
+            sx={{ color: selectLevelColor(dataset.allIssues, "green") }}
           />
         </ListItemIcon>
         <ListItemText primary={label} secondary={dataset.iri} />
@@ -355,14 +359,14 @@ function DatasetSection({
             <OpenInNewIcon />
           </a>
         </Box>
-        {dataset.issues.length === 0 ? null : (
+        {dataset.allIssues.length === 0 ? null : (
           <Box onClick={() => setOpen(!open)}>
             {open ? <ExpandLess /> : <ExpandMore />}
           </Box>
         )}
       </ListItem>
       <Collapse in={open} timeout="auto" unmountOnExit>
-        <IssuesList issues={dataset.issues} />
+        <IssuesList issues={dataset.allIssues} />
       </Collapse>
     </>
   );

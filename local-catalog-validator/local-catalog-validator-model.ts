@@ -262,6 +262,9 @@ export interface HighValueDataset {
   withoutHvdCategory: boolean;
 
   withHvdTopCategory: boolean;
+
+  withoutHvdDistribution: boolean;
+
 }
 
 /**
@@ -288,6 +291,8 @@ export interface Distribution {
 export interface DataServiceDistribution extends Distribution {
   isDataServiceDistribution: true;
 
+  dataServiceIri: string;
+
   withoutCzechTitle: boolean;
 
   withoutEndpointURL: boolean;
@@ -302,6 +307,13 @@ export const isDataServiceDistribution = (
 };
 
 export interface HighValueDataServiceDistribution {
+
+  /**
+   * True when the data service entity is marked as high value using
+   * legislation.
+   */
+  isHighValue: boolean;
+
   withoutHvdCategory: boolean;
 
   withHvdTopCategory: boolean;

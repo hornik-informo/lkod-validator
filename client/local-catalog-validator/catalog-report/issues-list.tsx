@@ -25,13 +25,17 @@ export function IssuesList({ issues }: { issues: Report.Issue[] }) {
 
 function IssueListItem({ issue }: { issue: Report.Issue }) {
   const { t } = useTranslation();
-
+  // This is not a good solution, but we just need it to be
+  // compatible with use in React bellow.
+  const content = t(issue.payload, issue.args) as string;
   return (
     <ListItem sx={{ pl: 4 }}>
       <ListItemIcon>
         <LevelIcon level={issue.level} />
       </ListItemIcon>
-      <ListItemText primary={t(issue.payload)} />
+      <ListItemText>
+        {content}
+      </ListItemText>
     </ListItem>
   );
 }

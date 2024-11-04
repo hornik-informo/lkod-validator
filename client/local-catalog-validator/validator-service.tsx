@@ -3,7 +3,7 @@ import { useState } from "react";
 export * as Report from "../../local-catalog-validator/local-catalog-validator-model";
 export { ContentType } from "../../service/content-type";
 
-import { type LocalCatalogReport } from "../../local-catalog-validator/local-catalog-validator-model";
+import * as Model from "../../local-catalog-validator/local-catalog-validator-model";
 import { createLocalCatalogReport } from "../../local-catalog-validator/local-catalog-validator";
 import {
   loadSchemasToJsonSchemaService,
@@ -38,7 +38,7 @@ interface State {
   /**
    * Validation report;
    */
-  report: LocalCatalogReport | null;
+  report: UiLocalCatalogReport | null;
   /**
    * Total number of dataset resources to process.
    */
@@ -47,6 +47,28 @@ interface State {
    * Number of processed dataset resources.
    */
   progressActual: number | null;
+}
+
+export interface UiLocalCatalogReport extends Model.LocalCatalogReport {
+
+  datasets: UiDatasetReference[];
+
+}
+
+export interface UiDatasetReference extends Model.DatasetReference {
+
+  datasets: UiDataset[];
+
+}
+
+export interface UiDataset extends Model.Dataset {
+
+  /**
+   * Issues related to datasets and distributions.
+   * We use this to optimize rendering.
+   */
+  allIssues: Model.Issue[];
+
 }
 
 interface ValidatorServiceType extends State {
@@ -124,8 +146,14 @@ export function useValidatorServiceType(): ValidatorServiceType {
     loader
       .load(url)
       .then(localCatalog => {
-        const report = createLocalCatalogReport(localCatalog);
-        console.log("validation finisher", { localCatalog, report });
+        const rawReport = createLocalCatalogReport(localCatalog);
+        const report = adoptLocalCatalogReport(rawReport);
+
+        consoleLogger.info("Validation report is ready.", {
+          "catalog": localCatalog,
+          "raw-report": rawReport,
+          "report": report });
+
         setState(previous => {
           if (previous.url === url) {
             // Update state.
@@ -164,5 +192,28 @@ export function useValidatorServiceType(): ValidatorServiceType {
   return {
     ...state,
     validate,
+  };
+}
+
+/**
+ * In the Model.LocalCatalogReport issues are stored on per entity basis.
+ * Yet as we render dataset we need to move issues from  distributions to datasets.
+ */
+function adoptLocalCatalogReport(report: Model.LocalCatalogReport) : UiLocalCatalogReport {
+  return {
+    ...report,
+    datasets: report.datasets.map(datasetReference => ({
+      ...datasetReference,
+      datasets: datasetReference.datasets.map((dataset) => {
+        let allIssues = dataset.issues;
+        for (const distribution of dataset.distributions) {
+          allIssues = [...allIssues, ...distribution.issues];
+        }
+        return {
+          ...dataset,
+          allIssues,
+        }
+      }),
+    })),
   };
 }

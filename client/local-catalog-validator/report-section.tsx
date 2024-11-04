@@ -2,7 +2,7 @@ import React from "react";
 
 import Box from "@mui/material/Box";
 
-import { Report } from "./validator-service";
+import { UiLocalCatalogReport } from "./validator-service";
 import { CanNotDetermineContentType } from "./catalog-report-failed/can-not-determine-content-type";
 import { CanNotFetchData } from "./catalog-report-failed/can-not-fetch-data";
 import { CanNotConvertToRdf } from "./catalog-report-failed/can-not-convert-to-rdf";
@@ -14,7 +14,7 @@ import { LocalCatalogReport } from "./catalog-report/catalog-report";
 export function ReportSection({
   report,
 }: {
-  report: Report.LocalCatalogReport;
+  report: UiLocalCatalogReport;
 }) {
   let content: React.ReactNode;
   if (report.loadingFailure?.conversionToRdfFailed === true) {
