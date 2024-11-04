@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import SimpleHTTPRequestHandler
 import socketserver
 
 class CORSRequestHandler (SimpleHTTPRequestHandler):
