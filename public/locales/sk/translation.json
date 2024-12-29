@@ -1,0 +1,106 @@
+{
+  "ui": {
+    "title": "Validátor lokálneho katalógu",
+    "introduction": "Tento validátor na základe URL rozhrania Lokálneho katalógu otvorených dát (LKOD) zvaliduje jeho správnost voči <1>platnému štandardu</1>. Môže sa teda používať behom vývoja LKOD, pred jeho registraciou do NKOD, alebo po registracií, pokial je <2>lokálný katalóg vidieť v NKOD</2>, ale nenačítajú se z neho žiadne dátové sady. Rozhranie LKOD musí implementovať <3>techniku CORS</3>.",
+    "resource-url": "URL vstupného budu pre validáciu",
+    "submit": "Spustiť validáciu",
+    "validation-failed-{error}": "Niečo se nečekane pokazilo pri validácii. Prosím nahláste nám aké URL ste validovali, nech to môžeme opraviť.",
+    "can-not-convert-to-rdf-summary": "Nepodarilo sa načítať vstupný bod ako RDF, zadané URL nevedie na validný lokálny katalóg.",
+    "can-not-convert-to-rdf-suggestion": "Skontrolujte, prosím, že sa jedná o validný RDF.",
+    "can-not-fetch-data-summary": "Nepodarilo sa načítať vstupný bod, zadané URL nevedie na validný lokálny katalóg.",
+    "can-not-fetch-data-suggestion": "Prosím, zkontrolujte, že je URL dostupné a má správne nastavenú techniku CORS.",
+    "can-not-determine-content-type-no-status-summary": "Nepodarilo sa načítať vstupný bod, zadané URL nevedie na validný lokálny katalóg.",
+    "can-not-determine-content-type-no-status-suggestion": "Prosím, skontrolujte, že je URL dostupné a má správne nastavenú techniku CORS.",
+    "can-not-determine-content-type-status-summary": "Nepodarilo sa načítať vstupný bod ako RDF, zadané URL nevedie na validný lokálny katalóg.",
+    "can-not-determine-content-type-status-suggestion-{status-code}-{content-type}": "Server odpovedal HTTP kódom {{status-code}} a hlavičkou content-type \"{{content-type}}\".",
+    "content-type": "Formát vstupného bodu",
+    "catalog-url": "URL kataógu",
+    "catalog-title": "Názov katalógu",
+    "number-of-resources-with-error": "Počet datasetov s chybou",
+    "number-of-datasets": "Celkový počet nájdených datasetov",
+    "number-of-datasets-with-warning": "Počet nájdených datasetov s varováním, ale bez chyby",
+    "number-of-datasets-with-error": "Počet nájdených datasetov s chybou",
+    "number-of-hvd": "Počet nájdených HVD",
+    "content-type-SPARQL": "DCAT-AP SPARQL Endpoint",
+    "content-type-JSONLD": "DCAT-AP Dokumenty - JSON-LD",
+    "content-type-TURTLE": "DCAT-AP Dokumenty - RDF Turtle",
+    "content-type-unknown": "Neznámy",
+    "show-details": "Zobraziť detaily",
+    "hide-details": "Skryť detaily",
+    "level-filter": "Minimálna závažnosť zobraných výsledkov",
+    "info": "Informácie",
+    "warning": "Varovanie",
+    "error": "Chyba",
+    "critical": "Závažná chyba",
+    "referenced-resources": "Odkaz URL z katalogu",
+    "dataset": "Dataset",
+    "dataseries": "Séria datasetov",
+    "no-search-results": "Nie sú dostupné žiadne výsledky požadovanej závažnosti.",
+    "processing-{total}-{actual}": "Prebieha spracovanie {{actual}} z {{total}}."
+  },
+  "logger": {
+    "loading-catalog-entry-{catalog}": "Načítavam katalóg \"{{catalog}}\".",
+    "loading-dataset-entry-{dataset}": "Načítavam dataset \"{{dataset}}\"."
+  },
+  "issues": {
+    "resource": {
+      "failed-to-determine-content-type": "Nepodarilo sa určiť typ obsahu.",
+      "failed-to-fetch": "Nepodarilo sa získať obsah.",
+      "failed-to-fetch-SPARQL": "Nepodarilo sa získať obsah zo SPARQL endpointu.",
+      "failed-to-fetch-JSONLD": "Nepodarilo sa získať obsah ako JSON-LD.",
+      "failed-to-fetch-TURTLE": "Nepodarilo sa získať obsah ako RDF Turtle.",
+      "failed-to-convert-to-rdf": "Nepodarilo sa získať obsah jako RDF.",
+      "no-dataset-found": "Nebola nájdený žiadny dataset.",
+      "is-json-but-not-valid-by-hvd-json-schema": "Dokument nezodpovedá HVD JSON schéme.",
+      "is-json-but-not-valid-by-dataset-json-schema": "Dokument nezodpovedá JSON schéme datasetu.",
+      "is-json-but-not-valid-by-series-json-schema": "Dokument nezodpovedá JSON schéme datovej série."
+    },
+    "dataset": {
+      "missing-type": "Chýba dcat:Dataset.",
+      "missing-czech-title": "Chýba slovenský název.",
+      "missing-czech-description": "Chýba slovenský popis.",
+      "missing-publisher": "Chýba poskytovateľ.",
+      "missing-ovm-publisher": "Poskytovateľ nie je platný (IRI).",
+      "missing-accrual-periodicity": "Chýba periodicita aktuálizácie.",
+      "missing-eurovoc-accrual-periodicity": "Periodicita aktualizácie nie je z požadovaného číselníka.",
+      "missing-spatial": "Chýba územné pokrytie.",
+      "missing-ruian-spatial": "Územné pokrytie nie je z číselníka NUTS.",
+      "missing-theme": "Chýba téma datasetu.",
+      "missing-eurovoc-theme": "Chýba téma datasetu z Eurovocu.",
+      "missing-keyword": "Chýba kľúčové slovo.",
+      "missing-czech-keyword": "Chýba slovenské klíčové slovo.",
+      "this-is-hvd": "Dataset je HVD.",
+      "missing-hvd-category": "Chýba HVD katagória.",
+      "contains-hvd-top-category": "Je použita koreňová HVD kategória, má byť použitá špecifická (listová).",
+      "no-distribution-found": "Nebola nájdená žiadna distribúcia.",
+      "missing-hvd-distribution-for-hvd-dataset": "HVD datseta musí mať aspoň jednu HVD distribúciu."
+    },
+    "dataset-series": {
+      "distribution-found-but-not-expected": "Dátová séria niesmie mať distribúcie."
+    },
+    "distribution": {
+      "missing-access-url-{distribution}": "Chýba prístupová URL pre \"{{distribution}}\".",
+      "missing-terms-of-use-{distribution}": "Chýbajú podmienky použitia pre \"{{distribution}}\"."
+    },
+    "data-service": {
+      "missing-czech-title-{data-service}": "Chýba slovenský názov pre dátovú službu \"{{data-service}}\".",
+      "missing-endpoint-url-{data-service}": "Chýba prístupový bod pre dátovú službu \"{{data-service}}\".",
+      "missing-hvd-category-{data-service}": "Chýba HVD kategória pre dátovú službu \"{{data-service}}\".",
+      "using-hvd-top-category-{data-service}": "je použitá koreňová HVD kategória pre dátovú službu \"{{data-service}}\", má byť použitá špecifická (listová).",
+      "missing-contact-point-{data-service}": "Chýbajú údaje pre dátovú službu \"{{data-service}}\".",
+      "missing-page-{data-service}": "Chýba dokumentácia pre dátovú službu \"{{data-service}}\".",
+      "missing-legislation-for-hvd-{data-service}": "Chýba označenie ako HVD pomocou legislatívy pre dátovú službu \"{{data-service}}\"."
+    },
+    "summary": {
+      "content-type-from-extension": "Druh obsahu bol určený z přípony. Webovým serverom nie je indikovaný správny Content-Type.",
+      "invalid-shacl": "Obsah nie je validný podľa SHACL.",
+      "invalid-json-schema": "Obsah nie je validný podľa JSON schémy.",
+      "missing-catalog": "Chýba inštancia katalogu.",
+      "multiple-catalogs": "Nájdených viac, než jeden katalóg.",
+      "missing-czech-title": "Chýba slovenský názov.",
+      "missing-czech-description": "Chýba slovenský popis.",
+      "missing-publisher": "Chýba poskytovateľ dát.",
+      "missing-ovm-publisher": "Poskytovateľ nie je platný."
+    }
+  }
+}

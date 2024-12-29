@@ -4,7 +4,7 @@
  */
 export const isPublisherOvm = (iri: string) =>
   iri.startsWith(
-    "https://rpp-opendata.egon.gov.cz/odrpp/zdroj/orgán-veřejné-moci/",
+    "https://data.gov.sk/id/legal-subject/",
   );
 
 /**
@@ -28,7 +28,7 @@ export const isFromAccrualPeriodicityCodelist = (iri: string) =>
  * @returns True when given IRI is from RUAIN codelist based on the prefix.
  */
 export const isFromRuianCodelist = (iri: string) =>
-  iri.startsWith("https://linked.cuzk.cz/resource/ruian/");
+  iri.startsWith("https://data.gov.sk/id/");
 
 /**
  * @param iri

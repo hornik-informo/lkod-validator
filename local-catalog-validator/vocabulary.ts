@@ -29,7 +29,7 @@ export const HAS_APPLICABLE_LEGISLATION =
   "http://data.europa.eu/r5r/applicableLegislation";
 
 export const HAS_TERMS_OF_USE =
-  "https://data.gov.cz/slovník/podmínky-užití/specifikace";
+  "https://data.gov.sk/def/ontology/legislation/termsOfUse";
 
 export const HAS_ACCESS_URL = "http://www.w3.org/ns/dcat#accessURL";
 

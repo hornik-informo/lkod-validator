@@ -56,7 +56,7 @@ function reportToCatalogs(report: Loader.LocalCatalog): Model.Catalog[] {
  * @returns Value with Czech language.
  */
 function selectCzechValue(string: Loader.LanguageString | null): string | null {
-  return string?.["cs"] ?? null;
+  return string?.["sk"] ?? null;
 }
 
 /**
@@ -64,7 +64,7 @@ function selectCzechValue(string: Loader.LanguageString | null): string | null {
  * @returns True when there is Czech content.
  */
 function hasCzechValue(string: Loader.LanguageString | null): boolean {
-  return string?.["cs"] !== undefined;
+  return string?.["sk"] !== undefined;
 }
 
 /**

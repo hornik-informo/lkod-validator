@@ -17,8 +17,8 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: "cs",
-    supportedLngs: ["cs"],
+    fallbackLng: "sk",
+    supportedLngs: ["sk"],
     debug: process.env.NODE_ENV === "development",
     interpolation: {
       // React takes care of the escaping.

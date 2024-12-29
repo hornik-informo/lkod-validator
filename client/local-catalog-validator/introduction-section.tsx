@@ -12,14 +12,14 @@ export function IntroductionSection() {
         Dummy text node here to make i18n work, it should not be visible to a
         user ...
         <a
-          href="https://ofn.gov.cz/dcat-ap-cz-rozhraní-katalogů-otevřených-dat/2024-05-28/"
+          href="https://htmlpreview.github.io/?https://github.com/slovak-egov/centralny-model-udajov/blob/develop/tbox/national/dcat-ap-sk/index.html"
           target="_blank"
           rel="noopener noreferrer"
         >
           OFN
         </a>
         <a
-          href="https://data.gov.cz/lokální-katalogy"
+          href="https://data.slovensko.sk/lokalne-katalogy"
           target="_blank"
           rel="noopener noreferrer"
         >
